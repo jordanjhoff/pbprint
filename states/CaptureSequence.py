@@ -157,7 +157,7 @@ class CaptureSequence(State):
     def next_state(self) -> State:
         from states.Start import Start
         self.send_job()
-        move_files(output_dir, archive_dir)
+        move_files(captures_dir, archive_dir)
         final = lambda: DisplayTextState(manager=self.manager,
                                 display_text="Thank you!",
                                 timeout=10,
