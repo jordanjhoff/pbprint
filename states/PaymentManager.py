@@ -1,8 +1,11 @@
 import os
 import uuid
+
+from dotenv import load_dotenv
 from square.client import Client
 from square.http.auth.o_auth_2 import BearerAuthCredentials
 
+load_dotenv()
 client = Client(
     bearer_auth_credentials=BearerAuthCredentials(
        access_token=os.environ.get("PAYMENT_TOKEN"),
