@@ -93,12 +93,16 @@ class CornerButton(QPushButton):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setFixedSize(500, 500)
+        self.setFixedSize(400, 200)
         self.setStyleSheet("background: transparent; border: none;")
         self.clicked.connect(self.emit_signal)
+        self.setFocusPolicy(Qt.NoFocus)
+        self.setCursor(Qt.BlankCursor) 
 
     def emit_signal(self):
         self.clicked_signal.emit()
+    
+        
 
 
 class SubGUI(QWidget):
@@ -149,8 +153,8 @@ class MainGUI(QWidget):
         self.image1_label = QLabel(self)
         self.image2_label = QLabel(self)
 
-        self.image1_label.setPixmap(QPixmap(f"{assets_dir}/crest.jpg").scaled(600, 400, Qt.KeepAspectRatio))
-        self.image2_label.setPixmap(QPixmap(f"{output_dir}/qrcode.png").scaled(500, 500, Qt.KeepAspectRatio))
+        self.image1_label.setPixmap(QPixmap(f"{assets_dir}/crest.jpg").scaled(300, 300, Qt.KeepAspectRatio))
+        self.image2_label.setPixmap(QPixmap(f"{output_dir}/qrcode.png").scaled(300, 300, Qt.KeepAspectRatio))
 
         self.text_label = QLabel("Welcome to BGE PHOTOBOOTH! TO USE THIS PHOTOBOOTH, SCAN THE QR CODE TO PAY.", self)
         self.text_label.setStyleSheet("font-size: 32px;")

@@ -6,9 +6,11 @@ from square.client import Client
 from square.http.auth.o_auth_2 import BearerAuthCredentials
 
 load_dotenv()
+access_token=os.environ.get("PAYMENT_TOKEN")
+print(f"TOKEN:{access_token}")
 client = Client(
     bearer_auth_credentials=BearerAuthCredentials(
-       access_token=os.environ.get("PAYMENT_TOKEN"),
+       access_token=access_token,
     ),
     environment='sandbox')
 

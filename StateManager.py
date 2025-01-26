@@ -8,9 +8,9 @@ class StateManager(QObject):
     def __init__(self):
         super().__init__()
         self.current_state = Start(self)
-        self.main_window = QMainWindow()
+        self.main_window = FullScreenWindow(monitor_index=0)
         self.main_window.setWindowTitle("Main")
-        self.sub_window = FullScreenWindow(monitor_index=0)
+        self.sub_window = FullScreenWindow(monitor_index=1)
         self.sub_window.setWindowTitle("Sub")
         self.sub_window.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.update_windows()
@@ -28,7 +28,10 @@ class StateManager(QObject):
         """Transition to the next state."""
         if next_state:
             self.current_state = next_state
+            self.main_window.activateWindow()
             self.update_windows()
+            self.main_window.activateWindow()
+            
 
 class FullScreenWindow(QMainWindow):
     def __init__(self, monitor_index=0):
@@ -40,6 +43,7 @@ class FullScreenWindow(QMainWindow):
         screen = screens[monitor_index]
         self.setGeometry(screen.geometry())
         self.showFullScreen()
+        self.setCursor(Qt.BlankCursor)
 
 
 if __name__ == "__main__":

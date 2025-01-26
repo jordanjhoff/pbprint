@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+import numpy as np
 from datetime import datetime
 
 from PIL import Image
@@ -150,18 +151,18 @@ class CaptureSequence(State):
 
     def send_job(self, photo_output_path=None) -> bool:
         images = get_image_paths(captures_dir)
-        create_photo(images, self.template, f"{output_dir}/final_photo.png")
+        create_photo(images, self.template, photo_output_path)
         print("Sending job")
         return send_print_job(photo_output_path)
 
     def next_state(self) -> State:
         from states.Start import Start
-        if not self.send_job():
+        if not self.send_job(f"{output_dir}/final_photo.png"):
             return DisplayTextState(manager=self.manager,
                                 display_text="Failed to send job to printer. Please contact for help",
                                 timeout=10,
                                 next=(lambda: Start(self.manager)))
-        move_files(captures_dir, archive_dir)
+        #move_files(captures_dir, archive_dir)
         final = lambda: DisplayTextState(manager=self.manager,
                                 display_text="Thank you!",
                                 timeout=10,
@@ -234,9 +235,9 @@ class CameraCaptureWidget(QWidget):
             QTimer.singleShot(self.display_time * 1000, self.end_freeze) # Freeze frame for display_time
 
         elif remaining_time == 1:
-            self.overlay_text(frame, "Smile!", position=(100, 200), font_scale=8, color=(0, 255, 0), thickness=8)
+            self.overlay_text(frame, "Smile!", position=(100, 100), font_scale=3, color=(0, 255, 0), thickness=8)
         else:
-            self.overlay_text(frame, str(remaining_time - 1), position=(100, 200), font_scale=8, color=(255, 255, 255),
+            self.overlay_text(frame, str(remaining_time - 1), position=(100, 100), font_scale=3, color=(255, 255, 255),
                               thickness=8)
 
         self.display_frame(frame)
@@ -259,15 +260,46 @@ class CameraCaptureWidget(QWidget):
         cv2.putText(frame, text, position, cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, thickness)
 
     def display_frame(self, frame):
+        """
+        Scales the frame to maintain aspect ratio, fits it within the video label, and centers it.
+        """
         label_width = self.video_label.width()
         label_height = self.video_label.height()
-        resized_frame = cv2.resize(frame, (label_width, label_height), interpolation=cv2.INTER_LINEAR)
-        height, width, channel = resized_frame.shape
+
+        frame_height, frame_width, _ = frame.shape
+        frame_aspect_ratio = frame_width / frame_height
+        label_aspect_ratio = label_width / label_height
+
+        if frame_aspect_ratio > label_aspect_ratio:
+            # Frame is wider than the label; fit to label's width
+            new_width = label_width
+            new_height = int(label_width / frame_aspect_ratio)
+        else:
+            # Frame is taller than the label; fit to label's height
+            new_height = label_height
+            new_width = int(label_height * frame_aspect_ratio)
+
+        # Resize frame
+        resized_frame = cv2.resize(frame, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
+
+        canvas = np.ones((label_height, label_width, 3), dtype=np.uint8) * 255
+
+
+        # Center the resized frame on the canvas
+        x_offset = (label_width - new_width) // 2
+        y_offset = (label_height - new_height) // 2
+        canvas[y_offset:y_offset + new_height, x_offset:x_offset + new_width] = resized_frame
+
+        # Convert the canvas to QImage
+        height, width, channel = canvas.shape
         bytes_per_line = channel * width
-        frame_bytes = resized_frame.tobytes()
+        frame_bytes = canvas.tobytes()
         qt_image = QImage(frame_bytes, width, height, bytes_per_line, QImage.Format_BGR888)
         pixmap = QPixmap.fromImage(qt_image)
+
+        # Display the pixmap
         self.video_label.setPixmap(pixmap)
+
 
     def crop_frame(self, frame):
         frame_height, frame_width, _ = frame.shape

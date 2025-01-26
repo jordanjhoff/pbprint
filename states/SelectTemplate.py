@@ -78,7 +78,7 @@ class MainGUI(QWidget):
         for image_path in images:
             label = QLabel(self)
             pixmap = QPixmap(image_path)
-            label.setPixmap(pixmap.scaled(800, 800, Qt.KeepAspectRatio))
+            label.setPixmap(pixmap.scaled(500, 500, Qt.KeepAspectRatio))
             label.setAlignment(Qt.AlignCenter)
             self.labels.append(label)
             image_layout.addWidget(label)
@@ -113,9 +113,9 @@ class SubGUI(QWidget):
         self.right_button = QPushButton("Right", self)
         self.select_button = QPushButton("Select", self)
 
-        self.left_button.setFixedSize(500, 300)
-        self.right_button.setFixedSize(500, 300)
-        self.select_button.setFixedSize(500, 300)
+        self.left_button.setFixedSize(300, 200)
+        self.right_button.setFixedSize(300, 200)
+        self.select_button.setFixedSize(300, 200)
 
         self.left_button.setStyleSheet("font-size: 32px;")
         self.right_button.setStyleSheet("font-size: 32px;")
