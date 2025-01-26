@@ -65,7 +65,7 @@ class PaymentManager:
             self.order_id = result.body['payment_link']['order_id']
             self.link_id = result.body['payment_link']['id']
         else:
-            print(result.body)
+            print(f"Failed to create link: {result.body}")
 
     def check_payment_status(self) -> str:
         result = client.orders.retrieve_order(

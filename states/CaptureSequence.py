@@ -148,15 +148,19 @@ class CaptureSequence(State):
         remove_all_files(captures_dir)
         self.template = template
 
-    def send_job(self, photo_output_path=None):
+    def send_job(self, photo_output_path=None) -> bool:
         images = get_image_paths(captures_dir)
         create_photo(images, self.template, f"{output_dir}/final_photo.png")
         print("Sending job")
-        send_print_job(photo_output_path)
+        return send_print_job(photo_output_path)
 
     def next_state(self) -> State:
         from states.Start import Start
-        self.send_job()
+        if not self.send_job():
+            return DisplayTextState(manager=self.manager,
+                                display_text="Failed to send job to printer. Please contact for help",
+                                timeout=10,
+                                next=(lambda: Start(self.manager)))
         move_files(captures_dir, archive_dir)
         final = lambda: DisplayTextState(manager=self.manager,
                                 display_text="Thank you!",
@@ -255,9 +259,12 @@ class CameraCaptureWidget(QWidget):
         cv2.putText(frame, text, position, cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, thickness)
 
     def display_frame(self, frame):
-        height, width, channel = frame.shape
+        label_width = self.video_label.width()
+        label_height = self.video_label.height()
+        resized_frame = cv2.resize(frame, (label_width, label_height), interpolation=cv2.INTER_LINEAR)
+        height, width, channel = resized_frame.shape
         bytes_per_line = channel * width
-        frame_bytes = frame.tobytes()
+        frame_bytes = resized_frame.tobytes()
         qt_image = QImage(frame_bytes, width, height, bytes_per_line, QImage.Format_BGR888)
         pixmap = QPixmap.fromImage(qt_image)
         self.video_label.setPixmap(pixmap)
