@@ -14,7 +14,7 @@ class Start(State):
         self.sub_widget.begin.clicked.connect(self.notify_state_update)
 
     def next_state(self, *args) -> 'State':
-        return SelectTemplate(state_manager=self.state_manager)
+        #return SelectTemplate(state_manager=self.state_manager)
         payment = PaymentManager()
         if payment.checkout_link is None:
             start = lambda: Start(self.state_manager)

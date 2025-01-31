@@ -36,8 +36,6 @@ class AwaitPayment(State):
         if payment_manager.checkout_link is None:
             self.notify_state_update("failed_payment")
             return
-        else:
-            self.create_qr_code(link=self.payment_manager.checkout_link)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.check_payment_status)
@@ -48,17 +46,17 @@ class AwaitPayment(State):
 
 
     def next_state(self, *args) -> 'State':
-        if args[0] == "return":
+        if args and args[0] == "return":
             from states.Start import Start
             self.payment_manager.clean_payment_manager()
             return Start(self.state_manager)
-        if args[0] == "failed_payment":
+        if args and args[0] == "failed_payment":
             start = lambda: Start(self.state_manager)
             return DisplayTextState(state_manager=self.state_manager,
                                     display_text="Unable to connect to internet",
                                     timeout=10,
                                     next=start)
-        if args[0] == "dev_bypass":
+        if args and args[0] == "dev_bypass":
             return DevBypass(self.state_manager)
         else:
             self.payment_manager.clean_payment_manager()
@@ -96,29 +94,6 @@ class AwaitPayment(State):
                 print("PAYMENT RECEIVED")
                 self.notify_state_update()
         self.retry_limit -= 1
-
-    def create_qr_code(self, link: str) -> None:
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(link)
-        qr.make(fit=True)
-
-        qr_img = qr.make_image(fill_color="red", back_color="beige").convert("RGBA")
-        qr_data = qr_img.getdata()
-        new_data = []
-        for item in qr_data:
-            # If white, make it transparent
-            if item[:3] == (255, 255, 255):
-                new_data.append((255, 255, 255, 0))  # Transparent
-            else:
-                new_data.append(item)  # Keep original color
-
-        qr_img.putdata(new_data)
-        qr_img.save(f"{output_dir}/qrcode.png", "PNG")
 
 
 class CornerButton(QPushButton):

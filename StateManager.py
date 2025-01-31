@@ -58,7 +58,7 @@ class FullScreenWindow(QMainWindow):
             }
             QLabel, QLineEdit {
                 color: black;
-                font-size: 16px;
+                font-size: 32px;
             }
         """)
 

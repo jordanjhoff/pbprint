@@ -3,9 +3,12 @@ import random
 import time
 import uuid
 
+import qrcode
 from dotenv import load_dotenv
 from square.client import Client
 from square.http.auth.o_auth_2 import BearerAuthCredentials
+
+from printer.printer import output_dir
 
 load_dotenv()
 access_token=os.environ.get("PAYMENT_TOKEN")
@@ -27,6 +30,8 @@ class PaymentManager:
         self.order_id = None
         self.link_id = None
         self.create_checkout_link()
+        if self.checkout_link is not None:
+            self.create_qr_code()
 
     def create_checkout_link(self) -> None:
         """
@@ -73,7 +78,7 @@ class PaymentManager:
                     self.checkout_link = result.body['payment_link']['long_url']
                     self.order_id = result.body['payment_link']['order_id']
                     self.link_id = result.body['payment_link']['id']
-                    return  # Exit the function since it succeeded
+                    return
 
                 else:
                     print(f"Failed to create link: {result.body}")
@@ -105,7 +110,33 @@ class PaymentManager:
         if result.is_success():
             print(result.body)
         elif result.is_error():
-            raise Exception(result.errors)
+            print(result.errors)
+        if os.path.exists(f"{output_dir}/qrcode.png"):
+            os.remove(f"{output_dir}/qrcode.png")
+
+
+
+    def create_qr_code(self) -> None:
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(self.checkout_link)
+        qr.make(fit=True)
+
+        qr_img = qr.make_image(fill_color="maroon", back_color="beige").convert("RGBA")
+        qr_data = qr_img.getdata()
+        new_data = []
+        for item in qr_data:
+            if item[:3] == (255, 255, 255):
+                new_data.append((255, 255, 255, 0))
+            else:
+                new_data.append(item)
+
+        qr_img.putdata(new_data)
+        qr_img.save(f"{output_dir}/qrcode.png", "PNG")
 
 
 if __name__ == '__main__':

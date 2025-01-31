@@ -156,6 +156,7 @@ class CaptureSequence(State):
     def send_job(self, photo_output_path=None) -> bool:
         images = get_image_paths(captures_dir)
         create_photo(images, self.template, photo_output_path)
+        move_files(captures_dir, archive_dir)
         print("Sending job")
         return send_print_job(photo_output_path)
 
@@ -166,7 +167,7 @@ class CaptureSequence(State):
                                     display_text="Failed to send job to printer. Please contact for help",
                                     timeout=10,
                                     next=(lambda: Start(self.state_manager)))
-        #move_files(captures_dir, archive_dir)
+
         final = lambda: DisplayTextState(state_manager=self.state_manager,
                                          display_text="Thank you!",
                                          timeout=10,
