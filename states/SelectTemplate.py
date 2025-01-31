@@ -38,7 +38,14 @@ pasta = {"num_images":3,
                   "border":f"{assets_dir}/pasta.png",
                  "orientation":"vertical"}
 
-templates = [vinny_template, pasta, film_template]
+doodle = {"num_images":3,
+                  "image_size":(550, 429),
+                  "starting_pos":(20,70),
+                  "image_div":72    ,
+                  "border":f"{assets_dir}/doodle.png",
+                 "orientation":"vertical"}
+
+templates = [vinny_template, pasta, doodle, film_template]
 
 class SelectTemplate(State):
 
