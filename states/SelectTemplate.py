@@ -9,41 +9,40 @@ from states.State import State
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
 
-vinny_template = {"num_images":3,
-                  "image_size":(482, 435),
-                  "starting_pos":(59,59),
-                  "image_div":58,
-                  "border":f"{assets_dir}/vinny2.png",
-                  "orientation":"vertical"}
+vinny_template = {"num_images": 3,
+                  "image_size": (482, 435),
+                  "starting_pos": (59, 59),
+                  "image_div": 58,
+                  "border": f"{assets_dir}/vinny2.png",
+                  "orientation": "vertical"}
 
-template_2 = {"num_images":4,
-                  "image_size":(482, 322),
-                  "starting_pos":(59,59),
-                  "image_div":58,
-                  "border":f"{assets_dir}/template_2.png",
-              "orientation":"vertical"}
+template_2 = {"num_images": 4,
+              "image_size": (482, 322),
+              "starting_pos": (59, 59),
+              "image_div": 58,
+              "border": f"{assets_dir}/template_2.png",
+              "orientation": "vertical"}
 
-film_template = {"num_images":3,
-                  "image_size":(414, 569),
-                  "starting_pos":(91,23),
-                  "image_div":10,
-                  "border":f"{assets_dir}/film_strip.png",
-                 "orientation":"horizontal"}
+film_template = {"num_images": 3,
+                 "image_size": (414, 569),
+                 "starting_pos": (91, 23),
+                 "image_div": 10,
+                 "border": f"{assets_dir}/film_strip.png",
+                 "orientation": "horizontal"}
 
+pasta = {"num_images": 3,
+         "image_size": (555, 431),
+         "starting_pos": (20, 90),
+         "image_div": 15,
+         "border": f"{assets_dir}/pasta.png",
+         "orientation": "vertical"}
 
-pasta = {"num_images":3,
-                  "image_size":(555, 431),
-                  "starting_pos":(20,90),
-                  "image_div":15,
-                  "border":f"{assets_dir}/pasta.png",
-                 "orientation":"vertical"}
-
-doodle = {"num_images":3,
-                  "image_size":(550, 429),
-                  "starting_pos":(20,70),
-                  "image_div":72    ,
-                  "border":f"{assets_dir}/doodle.png",
-                 "orientation":"vertical"}
+doodle = {"num_images": 3,
+          "image_size": (550, 429),
+          "starting_pos": (20, 70),
+          "image_div": 72,
+          "border": f"{assets_dir}/doodle.png",
+          "orientation": "vertical"}
 
 templates = [vinny_template, pasta, doodle, film_template]
 
