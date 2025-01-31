@@ -7,6 +7,8 @@ import os
 from PyQt5.QtGui import QPixmap
 from cv2 import data
 
+from states.DevBypass import DevBypass
+from states.DisplayTextState import DisplayTextState
 from states.PaymentManager import PaymentManager
 from states.SelectTemplate import SelectTemplate
 from states.State import State
@@ -17,6 +19,8 @@ from PyQt5.QtCore import pyqtSignal, Qt, QTimer, QThread
 
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
+
+
 
 class AwaitPayment(State):
 
@@ -29,29 +33,42 @@ class AwaitPayment(State):
         self.sub_widget.bottom_right_signal.connect(lambda: self.record_press("bottom-right"))
 
         self.payment_manager = payment_manager
-        self.create_qr_code(self.payment_manager.checkout_link)
+        if payment_manager.checkout_link is None:
+            self.notify_state_update("failed_payment")
+            return
+        else:
+            self.create_qr_code(link=self.payment_manager.checkout_link)
+
         self.timer = QTimer()
         self.timer.timeout.connect(self.check_payment_status)
         self.timer.start(5000)
-        self.main_widget = MainGUI()
         print("started timer")
         self.retries_reached = False
-        self.retry_limit = 60
+        self.retry_limit = 120
 
 
-    def next_state(self) -> 'State':
-        self.payment_manager.clean_payment_manager()
-        if self.retries_reached:
+    def next_state(self, *args) -> 'State':
+        if args[0] == "return":
             from states.Start import Start
+            self.payment_manager.clean_payment_manager()
             return Start(self.state_manager)
+        if args[0] == "failed_payment":
+            start = lambda: Start(self.state_manager)
+            return DisplayTextState(state_manager=self.state_manager,
+                                    display_text="Unable to connect to internet",
+                                    timeout=10,
+                                    next=start)
+        if args[0] == "dev_bypass":
+            return DevBypass(self.state_manager)
         else:
+            self.payment_manager.clean_payment_manager()
             return SelectTemplate(self.state_manager)
 
     def record_press(self, text: str):
         self.press_history.append(text)
         print(self.press_history)
         if len(self.press_history) == 4 and self.validate_history(["top-left", "top-right", "bottom-left", "bottom-right"]):
-            self.notify_state_update()
+            self.notify_state_update("dev_bypass")
         elif len(self.press_history) >= 4:
             self.press_history = self.press_history[1:]
 
@@ -81,8 +98,27 @@ class AwaitPayment(State):
         self.retry_limit -= 1
 
     def create_qr_code(self, link: str) -> None:
-        img = qrcode.make(link)
-        img.save(f'{output_dir}/qrcode.png')
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(link)
+        qr.make(fit=True)
+
+        qr_img = qr.make_image(fill_color="red", back_color="beige").convert("RGBA")
+        qr_data = qr_img.getdata()
+        new_data = []
+        for item in qr_data:
+            # If white, make it transparent
+            if item[:3] == (255, 255, 255):
+                new_data.append((255, 255, 255, 0))  # Transparent
+            else:
+                new_data.append(item)  # Keep original color
+
+        qr_img.putdata(new_data)
+        qr_img.save(f"{output_dir}/qrcode.png", "PNG")
 
 
 class CornerButton(QPushButton):

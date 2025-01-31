@@ -17,7 +17,7 @@ class DisplayTextState(State):
         self.timer.timeout.connect(self.notify_state_update)
         self.timer.start(timeout*1000)
 
-    def next_state(self) -> 'State':
+    def next_state(self, *args) -> 'State':
         return self.next()
 
 class TextGUI(QWidget):

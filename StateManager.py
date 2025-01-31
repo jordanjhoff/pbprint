@@ -45,6 +45,23 @@ class FullScreenWindow(QMainWindow):
         self.showFullScreen()
         self.setCursor(Qt.BlankCursor)
         self.setStyleSheet("background-color: beige;")
+        app.setStyleSheet("""
+            QPushButton {
+                background-color: darkgray;
+                color: black;
+                font-size: 18px;
+                padding: 10px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: gray;
+            }
+            QLabel, QLineEdit {
+                color: black;
+                font-size: 16px;
+            }
+        """)
+
 
 
 if __name__ == "__main__":

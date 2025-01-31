@@ -21,15 +21,17 @@ class State(QObject):
         self.state_changed_signal = pyqtSignal()
 
     @abstractmethod
-    def next_state(self) -> 'State':
+    def next_state(self, *args) -> 'State':
         """
         Abstract method for transitioning to the next state.
+        :param *args:
         :return: The next state.
         """
         pass
 
-    def notify_state_update(self) -> None:
+    def notify_state_update(self, *args) -> None:
         """
         Method to trigger when the state is updated.
+        :param *args:
         """
-        self.state_manager.advance_state(self.next_state())
+        self.state_manager.advance_state(self.next_state(*args))

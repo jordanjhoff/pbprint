@@ -2,7 +2,9 @@ from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QLabel, QVBoxLayout
 
 from states.AwaitPayment import AwaitPayment
+from states.DisplayTextState import DisplayTextState
 from states.PaymentManager import PaymentManager
+from states.SelectTemplate import SelectTemplate
 from states.State import State
 
 class Start(State):
@@ -11,9 +13,15 @@ class Start(State):
 
         self.sub_widget.begin.clicked.connect(self.notify_state_update)
 
-    def next_state(self) -> 'State':
-        #return SelectTemplate(self.manager)
+    def next_state(self, *args) -> 'State':
+        return SelectTemplate(state_manager=self.state_manager)
         payment = PaymentManager()
+        if payment.checkout_link is None:
+            start = lambda: Start(self.state_manager)
+            return DisplayTextState(state_manager=self.state_manager,
+                                    display_text="Unable to connect to internet",
+                                    timeout=10,
+                                    next=start)
         return AwaitPayment(self.state_manager, payment_manager=payment)
 
 

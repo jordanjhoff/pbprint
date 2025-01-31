@@ -159,7 +159,7 @@ class CaptureSequence(State):
         print("Sending job")
         return send_print_job(photo_output_path)
 
-    def next_state(self) -> State:
+    def next_state(self, *args) -> State:
         from states.Start import Start
         if not self.send_job(f"{output_dir}/final_photo.png"):
             return DisplayTextState(state_manager=self.state_manager,

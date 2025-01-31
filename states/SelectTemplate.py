@@ -59,7 +59,7 @@ class SelectTemplate(State):
         self.main_widget.highlight_image(self.current_index)
         print(f"Template {self.current_index} selected.")
 
-    def next_state(self) -> 'State':
+    def next_state(self, *args) -> 'State':
         return DisplayTextState(state_manager=self.state_manager,
                                 display_text="Ready?",
                                 timeout=7,
@@ -76,8 +76,13 @@ class MainGUI(QWidget):
         super().__init__()
         self.labels = []
         self.layout = QVBoxLayout()
-        self.text_label = QLabel("CHOOSE A TEMPLATE, AND PRESS SELECT", self)
+        self.image_layout = QHBoxLayout()
+        self.text_label = QLabel("CHOOSE A TEMPLATE USING THE KEYPAD, AND PRESS SELECT", self)
         self.text_label.setStyleSheet("font-size: 32px;")
+        self.text_label.setAlignment(Qt.AlignCenter)
+
+        self.layout.addLayout(self.image_layout)
+        self.layout.addWidget(self.text_label, alignment=Qt.AlignCenter)
         self.setLayout(self.layout)
 
     def set_images(self, images):
