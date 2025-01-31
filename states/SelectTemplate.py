@@ -30,7 +30,15 @@ film_template = {"num_images":3,
                   "border":f"{assets_dir}/film_strip.png",
                  "orientation":"horizontal"}
 
-templates = [vinny_template, template_2, film_template]
+
+pasta = {"num_images":3,
+                  "image_size":(555, 431),
+                  "starting_pos":(20,90),
+                  "image_div":15,
+                  "border":f"{assets_dir}/pasta.png",
+                 "orientation":"vertical"}
+
+templates = [vinny_template, pasta, film_template]
 
 class SelectTemplate(State):
 
