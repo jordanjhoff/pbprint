@@ -7,7 +7,7 @@ class State(QObject):
     """
     Abstract base class representing a state in the application.
     """
-    def __init__(self, manager, main_widget: QWidget, sub_widget: QWidget):
+    def __init__(self, state_manager, main_widget: QWidget, sub_widget: QWidget):
         """
         Initialize the state with references to the main and sub widgets.
 
@@ -15,7 +15,7 @@ class State(QObject):
         :param sub_widget: The sub widget of the application.
         """
         super().__init__()
-        self.manager = manager
+        self.state_manager = state_manager
         self.main_widget = main_widget
         self.sub_widget = sub_widget
         self.state_changed_signal = pyqtSignal()
@@ -32,4 +32,4 @@ class State(QObject):
         """
         Method to trigger when the state is updated.
         """
-        self.manager.advance_state(self.next_state())
+        self.state_manager.advance_state(self.next_state())

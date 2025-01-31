@@ -92,8 +92,13 @@ def process_images(image_paths, template):
     final_images = []
     image_size = template.get("image_size")
     for image_path in image_paths:
-        img = image_to_center_crop_aspect(image_path, (image_size[0] / image_size[1]))
-        img = img.resize((image_size[0], image_size[1]))
+        if template.get("orientation") == "horizontal":
+            img = image_to_center_crop_aspect(image_path, (image_size[1] / image_size[0]))
+            img = img.resize((image_size[1], image_size[0]))
+            img = img.rotate(-90, expand=True)
+        else:
+            img = image_to_center_crop_aspect(image_path, (image_size[0] / image_size[1]))
+            img = img.resize((image_size[0], image_size[1]))
         final_images.append(img)
     return final_images
 
@@ -126,10 +131,9 @@ def get_image_paths(directory):
         [
             os.path.abspath(os.path.join(directory, f))
             for f in os.listdir(directory)
-            if os.path.isfile(os.path.join(directory, f)) and not f.startswith('.')
+            if os.path.isfile(os.path.join(directory, f)) and f.lower().endswith(('.png', '.jpg'))
         ]
     )
-
 
 def move_files(source_dir, destination_dir):
     for file_name in os.listdir(source_dir):
@@ -144,8 +148,8 @@ class CaptureSequence(State):
     """
     Manages the GUI that runs the capture sequence for the photo booth.
     """
-    def __init__(self, manager, template: dict, parent=None, ):
-        super().__init__(manager, main_widget=CameraCaptureWidget(state=self,save_dir =captures_dir,template=template), sub_widget=None)
+    def __init__(self, state_manager, template: dict, parent=None, ):
+        super().__init__(state_manager, main_widget=CameraCaptureWidget(state=self, save_dir =captures_dir, template=template), sub_widget=None)
         remove_all_files(captures_dir)
         self.template = template
 
@@ -158,16 +162,16 @@ class CaptureSequence(State):
     def next_state(self) -> State:
         from states.Start import Start
         if not self.send_job(f"{output_dir}/final_photo.png"):
-            return DisplayTextState(manager=self.manager,
-                                display_text="Failed to send job to printer. Please contact for help",
-                                timeout=10,
-                                next=(lambda: Start(self.manager)))
+            return DisplayTextState(state_manager=self.state_manager,
+                                    display_text="Failed to send job to printer. Please contact for help",
+                                    timeout=10,
+                                    next=(lambda: Start(self.state_manager)))
         #move_files(captures_dir, archive_dir)
-        final = lambda: DisplayTextState(manager=self.manager,
-                                display_text="Thank you!",
-                                timeout=10,
-                                next=(lambda: Start(self.manager)))
-        return DisplayTextState(manager=self.manager,
+        final = lambda: DisplayTextState(state_manager=self.state_manager,
+                                         display_text="Thank you!",
+                                         timeout=10,
+                                         next=(lambda: Start(self.state_manager)))
+        return DisplayTextState(state_manager=self.state_manager,
                                 display_text="Printing...",
                                 timeout=30,
                                 next=final)
@@ -182,7 +186,10 @@ class CameraCaptureWidget(QWidget):
         self.countdown_time = countdown_time
         self.preview_time = preview_time
         self.num_images = template.get("num_images")
-        self.aspect_ratio = template.get("image_size")[0] / template.get("image_size")[1]
+        if self.template.get("orientation") == "horizontal":
+            self.aspect_ratio = template.get("image_size")[1] / template.get("image_size")[0]
+        else:
+            self.aspect_ratio = template.get("image_size")[0] / template.get("image_size")[1]
         self.photos_index = 0
         self.start_time = time.time()
         self.is_freezing = False

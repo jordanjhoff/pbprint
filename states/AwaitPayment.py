@@ -20,15 +20,15 @@ output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outp
 
 class AwaitPayment(State):
 
-    def __init__(self, manager):
-        super().__init__(manager=manager, main_widget=MainGUI(), sub_widget=SubGUI())
+    def __init__(self, state_manager, payment_manager: PaymentManager):
+        super().__init__(state_manager=state_manager, main_widget=MainGUI(), sub_widget=SubGUI())
         self.press_history = []
         self.sub_widget.top_left_signal.connect(lambda: self.record_press("top-left"))
         self.sub_widget.top_right_signal.connect(lambda: self.record_press("top-right"))
         self.sub_widget.bottom_left_signal.connect(lambda: self.record_press("bottom-left"))
         self.sub_widget.bottom_right_signal.connect(lambda: self.record_press("bottom-right"))
 
-        self.payment_manager = PaymentManager()
+        self.payment_manager = payment_manager
         self.create_qr_code(self.payment_manager.checkout_link)
         self.timer = QTimer()
         self.timer.timeout.connect(self.check_payment_status)
@@ -43,9 +43,9 @@ class AwaitPayment(State):
         self.payment_manager.clean_payment_manager()
         if self.retries_reached:
             from states.Start import Start
-            return Start(self.manager)
+            return Start(self.state_manager)
         else:
-            return SelectTemplate(self.manager)
+            return SelectTemplate(self.state_manager)
 
     def record_press(self, text: str):
         self.press_history.append(text)

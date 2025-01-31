@@ -10,7 +10,7 @@ class StateManager(QObject):
         self.current_state = Start(self)
         self.main_window = FullScreenWindow(monitor_index=0)
         self.main_window.setWindowTitle("Main")
-        self.sub_window = FullScreenWindow(monitor_index=1)
+        self.sub_window = FullScreenWindow(monitor_index=0)
         self.sub_window.setWindowTitle("Sub")
         self.sub_window.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.update_windows()
@@ -44,6 +44,7 @@ class FullScreenWindow(QMainWindow):
         self.setGeometry(screen.geometry())
         self.showFullScreen()
         self.setCursor(Qt.BlankCursor)
+        self.setStyleSheet("background-color: beige;")
 
 
 if __name__ == "__main__":

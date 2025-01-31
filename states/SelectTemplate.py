@@ -13,20 +13,29 @@ vinny_template = {"num_images":3,
                   "image_size":(482, 435),
                   "starting_pos":(59,59),
                   "image_div":58,
-                  "border":f"{assets_dir}/vinny2.png"}
+                  "border":f"{assets_dir}/vinny2.png",
+                  "orientation":"vertical"}
 
 template_2 = {"num_images":4,
                   "image_size":(482, 322),
                   "starting_pos":(59,59),
                   "image_div":58,
-                  "border":f"{assets_dir}/template_2.png"}
+                  "border":f"{assets_dir}/template_2.png",
+              "orientation":"vertical"}
 
-templates = [vinny_template, template_2, vinny_template, vinny_template]
+film_template = {"num_images":3,
+                  "image_size":(414, 569),
+                  "starting_pos":(91,23),
+                  "image_div":10,
+                  "border":f"{assets_dir}/film_strip.png",
+                 "orientation":"horizontal"}
+
+templates = [vinny_template, template_2, film_template]
 
 class SelectTemplate(State):
 
-    def __init__(self, manager):
-        super().__init__(manager, main_widget=MainGUI(), sub_widget=SubGUI())
+    def __init__(self, state_manager):
+        super().__init__(state_manager, main_widget=MainGUI(), sub_widget=SubGUI())
         """Manages the image selection and interaction between the two GUIs."""
 
         self.templates = templates
@@ -51,10 +60,10 @@ class SelectTemplate(State):
         print(f"Template {self.current_index} selected.")
 
     def next_state(self) -> 'State':
-        return DisplayTextState(manager=self.manager,
+        return DisplayTextState(state_manager=self.state_manager,
                                 display_text="Ready?",
                                 timeout=7,
-                                next=(lambda: CaptureSequence(manager=self.manager, template=self.templates[self.current_index])))
+                                next=(lambda: CaptureSequence(state_manager=self.state_manager, template=self.templates[self.current_index])))
 
 
 
@@ -68,6 +77,7 @@ class MainGUI(QWidget):
         self.labels = []
         self.layout = QVBoxLayout()
         self.text_label = QLabel("CHOOSE A TEMPLATE, AND PRESS SELECT", self)
+        self.text_label.setStyleSheet("font-size: 32px;")
         self.setLayout(self.layout)
 
     def set_images(self, images):
