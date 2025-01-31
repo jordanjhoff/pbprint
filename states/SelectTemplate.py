@@ -14,35 +14,40 @@ vinny_template = {"num_images": 3,
                   "starting_pos": (59, 59),
                   "image_div": 58,
                   "border": f"{assets_dir}/vinny2.png",
-                  "orientation": "vertical"}
+                  "orientation": "vertical",
+                  "date":"black"}
 
 template_2 = {"num_images": 4,
               "image_size": (482, 322),
               "starting_pos": (59, 59),
               "image_div": 58,
               "border": f"{assets_dir}/template_2.png",
-              "orientation": "vertical"}
+              "orientation": "vertical",
+              "date":"black"}
 
 film_template = {"num_images": 3,
                  "image_size": (414, 569),
                  "starting_pos": (91, 23),
                  "image_div": 10,
                  "border": f"{assets_dir}/film_strip.png",
-                 "orientation": "horizontal"}
+                 "orientation": "horizontal",
+                 "date":False}
 
 pasta = {"num_images": 3,
          "image_size": (555, 431),
-         "starting_pos": (20, 90),
+         "starting_pos": (20, 50),
          "image_div": 15,
          "border": f"{assets_dir}/pasta.png",
-         "orientation": "vertical"}
+         "orientation": "vertical",
+         "date":"black"}
 
 doodle = {"num_images": 3,
           "image_size": (550, 429),
           "starting_pos": (20, 70),
           "image_div": 72,
           "border": f"{assets_dir}/doodle.png",
-          "orientation": "vertical"}
+          "orientation": "vertical",
+          "date":"white"}
 
 templates = [vinny_template, pasta, doodle, film_template]
 

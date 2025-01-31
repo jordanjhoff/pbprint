@@ -4,7 +4,7 @@ import time
 import numpy as np
 from datetime import datetime
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 from printer.printer import send_print_job
 from states.DisplayTextState import DisplayTextState
@@ -103,6 +103,23 @@ def process_images(image_paths, template):
     return final_images
 
 
+def add_date(final_image, template):
+    draw = ImageDraw.Draw(final_image)
+    font = ImageFont.truetype(f"{assets_dir}/font.ttf", 25)
+
+    img_width, img_height = final_image.size
+    date_str = datetime.now().strftime("%m.%d.%Y")
+    bbox = draw.textbbox((0, 0), date_str, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+
+    x = (img_width - text_width) // 2
+    y = img_height - text_height - 35
+
+    draw.text((x, y), date_str, fill=template.get("date"), font=font)
+    return final_image
+
+
 def create_photo(image_paths, template, output_path):
     '''
     Creates final photobooth png image
@@ -121,6 +138,8 @@ def create_photo(image_paths, template, output_path):
 
     border = Image.open(template.get("border")).convert("RGBA")
     final_image.paste(border, (0, 0), border)
+    if template.get("date"):
+        final_image = add_date(final_image, template)
     final_image = place_next_duplicate(final_image)
     final_image.save(output_path)
     print(f"Final image saved at: {output_path}")
