@@ -50,3 +50,4 @@ if __name__ == "__main__":
     app = QApplication([])
     state_manager = StateManager()
     app.exec_()
+    app.setStyleSheet("QPushButton { background-color: gray; color: black;}")
