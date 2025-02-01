@@ -1,4 +1,6 @@
 import os
+import subprocess
+
 import cups
 
 def send_print_job(file) -> bool:
@@ -9,8 +11,17 @@ def send_print_job(file) -> bool:
         print("Connected")
         return True
     except Exception as e:
+        clear_cups_queue()
         print(f"FAILED TO SEND JOB TO PRINTER: {e}")
         return False
+
+
+def clear_cups_queue():
+    try:
+        subprocess.run(["cancel", "-a"], check=True)
+        print("CUPS queue cleared.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error clearing CUPS queue: {e}")
 
 # Define the output directory
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))

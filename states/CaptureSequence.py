@@ -4,7 +4,7 @@ import time
 import numpy as np
 from datetime import datetime
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 from printer.printer import send_print_job
 from states.DisplayTextState import DisplayTextState
@@ -92,10 +92,32 @@ def process_images(image_paths, template):
     final_images = []
     image_size = template.get("image_size")
     for image_path in image_paths:
-        img = image_to_center_crop_aspect(image_path, (image_size[0] / image_size[1]))
-        img = img.resize((image_size[0], image_size[1]))
+        if template.get("orientation") == "horizontal":
+            img = image_to_center_crop_aspect(image_path, (image_size[1] / image_size[0]))
+            img = img.resize((image_size[1], image_size[0]))
+            img = img.rotate(-90, expand=True)
+        else:
+            img = image_to_center_crop_aspect(image_path, (image_size[0] / image_size[1]))
+            img = img.resize((image_size[0], image_size[1]))
         final_images.append(img)
     return final_images
+
+
+def add_date(final_image, template):
+    draw = ImageDraw.Draw(final_image)
+    font = ImageFont.truetype(f"{assets_dir}/font.ttf", 25)
+
+    img_width, img_height = final_image.size
+    date_str = datetime.now().strftime("%m.%d.%Y")
+    bbox = draw.textbbox((0, 0), date_str, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+
+    x = (img_width - text_width) // 2
+    y = img_height - text_height - 35
+
+    draw.text((x, y), date_str, fill=template.get("date"), font=font)
+    return final_image
 
 
 def create_photo(image_paths, template, output_path):
@@ -116,6 +138,8 @@ def create_photo(image_paths, template, output_path):
 
     border = Image.open(template.get("border")).convert("RGBA")
     final_image.paste(border, (0, 0), border)
+    if template.get("date"):
+        final_image = add_date(final_image, template)
     final_image = place_next_duplicate(final_image)
     final_image.save(output_path)
     print(f"Final image saved at: {output_path}")
@@ -126,10 +150,9 @@ def get_image_paths(directory):
         [
             os.path.abspath(os.path.join(directory, f))
             for f in os.listdir(directory)
-            if os.path.isfile(os.path.join(directory, f)) and not f.startswith('.')
+            if os.path.isfile(os.path.join(directory, f)) and f.lower().endswith(('.png', '.jpg'))
         ]
     )
-
 
 def move_files(source_dir, destination_dir):
     for file_name in os.listdir(source_dir):
@@ -144,30 +167,31 @@ class CaptureSequence(State):
     """
     Manages the GUI that runs the capture sequence for the photo booth.
     """
-    def __init__(self, manager, template: dict, parent=None, ):
-        super().__init__(manager, main_widget=CameraCaptureWidget(state=self,save_dir =captures_dir,template=template), sub_widget=None)
+    def __init__(self, state_manager, template: dict, parent=None, ):
+        super().__init__(state_manager, main_widget=CameraCaptureWidget(state=self, save_dir =captures_dir, template=template), sub_widget=None)
         remove_all_files(captures_dir)
         self.template = template
 
     def send_job(self, photo_output_path=None) -> bool:
         images = get_image_paths(captures_dir)
         create_photo(images, self.template, photo_output_path)
+        move_files(captures_dir, archive_dir)
         print("Sending job")
         return send_print_job(photo_output_path)
 
-    def next_state(self) -> State:
+    def next_state(self, *args) -> State:
         from states.Start import Start
         if not self.send_job(f"{output_dir}/final_photo.png"):
-            return DisplayTextState(manager=self.manager,
-                                display_text="Failed to send job to printer. Please contact for help",
-                                timeout=10,
-                                next=(lambda: Start(self.manager)))
-        #move_files(captures_dir, archive_dir)
-        final = lambda: DisplayTextState(manager=self.manager,
-                                display_text="Thank you!",
-                                timeout=10,
-                                next=(lambda: Start(self.manager)))
-        return DisplayTextState(manager=self.manager,
+            return DisplayTextState(state_manager=self.state_manager,
+                                    display_text="Failed to send job to printer. Please contact for help",
+                                    timeout=10,
+                                    next=(lambda: Start(self.state_manager)))
+
+        final = lambda: DisplayTextState(state_manager=self.state_manager,
+                                         display_text="Thank you!",
+                                         timeout=10,
+                                         next=(lambda: Start(self.state_manager)))
+        return DisplayTextState(state_manager=self.state_manager,
                                 display_text="Printing...",
                                 timeout=30,
                                 next=final)
@@ -182,7 +206,10 @@ class CameraCaptureWidget(QWidget):
         self.countdown_time = countdown_time
         self.preview_time = preview_time
         self.num_images = template.get("num_images")
-        self.aspect_ratio = template.get("image_size")[0] / template.get("image_size")[1]
+        if self.template.get("orientation") == "horizontal":
+            self.aspect_ratio = template.get("image_size")[1] / template.get("image_size")[0]
+        else:
+            self.aspect_ratio = template.get("image_size")[0] / template.get("image_size")[1]
         self.photos_index = 0
         self.start_time = time.time()
         self.is_freezing = False

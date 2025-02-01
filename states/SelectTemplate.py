@@ -9,24 +9,52 @@ from states.State import State
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
 
-vinny_template = {"num_images":3,
-                  "image_size":(482, 435),
-                  "starting_pos":(59,59),
-                  "image_div":58,
-                  "border":f"{assets_dir}/vinny2.png"}
+vinny_template = {"num_images": 3,
+                  "image_size": (482, 435),
+                  "starting_pos": (59, 59),
+                  "image_div": 58,
+                  "border": f"{assets_dir}/vinny2.png",
+                  "orientation": "vertical",
+                  "date":"black"}
 
-template_2 = {"num_images":4,
-                  "image_size":(482, 322),
-                  "starting_pos":(59,59),
-                  "image_div":58,
-                  "border":f"{assets_dir}/template_2.png"}
+template_2 = {"num_images": 4,
+              "image_size": (482, 322),
+              "starting_pos": (59, 59),
+              "image_div": 58,
+              "border": f"{assets_dir}/template_2.png",
+              "orientation": "vertical",
+              "date":"black"}
 
-templates = [vinny_template, template_2, vinny_template, vinny_template]
+film_template = {"num_images": 3,
+                 "image_size": (414, 569),
+                 "starting_pos": (91, 23),
+                 "image_div": 10,
+                 "border": f"{assets_dir}/film_strip.png",
+                 "orientation": "horizontal",
+                 "date":False}
+
+pasta = {"num_images": 3,
+         "image_size": (555, 431),
+         "starting_pos": (20, 50),
+         "image_div": 15,
+         "border": f"{assets_dir}/pasta.png",
+         "orientation": "vertical",
+         "date":"black"}
+
+doodle = {"num_images": 3,
+          "image_size": (550, 429),
+          "starting_pos": (20, 70),
+          "image_div": 72,
+          "border": f"{assets_dir}/doodle.png",
+          "orientation": "vertical",
+          "date":"white"}
+
+templates = [vinny_template, pasta, doodle, film_template]
 
 class SelectTemplate(State):
 
-    def __init__(self, manager):
-        super().__init__(manager, main_widget=MainGUI(), sub_widget=SubGUI())
+    def __init__(self, state_manager):
+        super().__init__(state_manager, main_widget=MainGUI(), sub_widget=SubGUI())
         """Manages the image selection and interaction between the two GUIs."""
 
         self.templates = templates
@@ -50,11 +78,11 @@ class SelectTemplate(State):
         self.main_widget.highlight_image(self.current_index)
         print(f"Template {self.current_index} selected.")
 
-    def next_state(self) -> 'State':
-        return DisplayTextState(manager=self.manager,
+    def next_state(self, *args) -> 'State':
+        return DisplayTextState(state_manager=self.state_manager,
                                 display_text="Ready?",
                                 timeout=7,
-                                next=(lambda: CaptureSequence(manager=self.manager, template=self.templates[self.current_index])))
+                                next=(lambda: CaptureSequence(state_manager=self.state_manager, template=self.templates[self.current_index])))
 
 
 
@@ -67,7 +95,13 @@ class MainGUI(QWidget):
         super().__init__()
         self.labels = []
         self.layout = QVBoxLayout()
-        self.text_label = QLabel("CHOOSE A TEMPLATE, AND PRESS SELECT", self)
+        self.image_layout = QHBoxLayout()
+        self.text_label = QLabel("CHOOSE A TEMPLATE USING THE KEYPAD, AND PRESS SELECT", self)
+        self.text_label.setStyleSheet("font-size: 32px;")
+        self.text_label.setAlignment(Qt.AlignCenter)
+
+        self.layout.addLayout(self.image_layout)
+        self.layout.addWidget(self.text_label, alignment=Qt.AlignCenter)
         self.setLayout(self.layout)
 
     def set_images(self, images):
