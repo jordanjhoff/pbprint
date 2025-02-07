@@ -33,6 +33,14 @@ film_template = {"num_images": 3,
                  "orientation": "horizontal",
                  "date":False}
 
+film2 = {"num_images": 3,
+                 "image_size": (380, 580),
+                 "starting_pos": (110, 23),
+                 "image_div": 10,
+                 "border": f"{assets_dir}/film2.png",
+                 "orientation": "horizontal",
+                 "date":False}
+
 pasta = {"num_images": 3,
          "image_size": (555, 431),
          "starting_pos": (20, 50),
@@ -40,6 +48,14 @@ pasta = {"num_images": 3,
          "border": f"{assets_dir}/pasta.png",
          "orientation": "vertical",
          "date":"black"}
+
+vday = {"num_images": 3,
+         "image_size": (555, 431),
+         "starting_pos": (20, 50),
+         "image_div": 15,
+         "border": f"{assets_dir}/vday.png",
+         "orientation": "vertical",
+         "date":"white"}
 
 doodle = {"num_images": 3,
           "image_size": (550, 429),
@@ -49,7 +65,7 @@ doodle = {"num_images": 3,
           "orientation": "vertical",
           "date":"white"}
 
-templates = [vinny_template, pasta, doodle, film_template]
+templates = [vinny_template, film2, doodle, vday]
 
 class SelectTemplate(State):
 
