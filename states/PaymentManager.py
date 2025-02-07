@@ -18,7 +18,7 @@ client = Client(
     bearer_auth_credentials=BearerAuthCredentials(
        access_token=access_token,
     ),
-    environment='sandbox')
+    environment='production')
 
 class PaymentManager:
     def __init__(self, amount: int = 5, currency: str = "USD"):

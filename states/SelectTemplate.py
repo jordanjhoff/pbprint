@@ -150,10 +150,7 @@ class SubGUI(QWidget):
         self.left_button.setFixedSize(300, 200)
         self.right_button.setFixedSize(300, 200)
         self.select_button.setFixedSize(300, 200)
-
-        self.left_button.setStyleSheet("font-size: 32px;")
-        self.right_button.setStyleSheet("font-size: 32px;")
-        self.select_button.setStyleSheet("font-size: 32px;")
+        self.setStyleSheet("QPushButton {border: 10px solid black; font-size: 64px; background-color: gray; color: black;}")
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.left_button)

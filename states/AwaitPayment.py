@@ -92,7 +92,7 @@ class AwaitPayment(State):
             print(f"status: {status}")
             if status == "OPEN":
                 print("PAYMENT RECEIVED")
-                self.notify_state_update()
+                self.notify_state_update("continue")
         self.retry_limit -= 1
 
 

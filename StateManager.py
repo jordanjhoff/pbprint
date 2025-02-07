@@ -2,15 +2,22 @@ from PyQt5.QtCore import QObject, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from states.Start import Start
 from states.State import State
+from getdevice import *
 
 
 class StateManager(QObject):
     def __init__(self):
+        target_device_name = "USB2IIC_CTP_CONTROL"
+        target_output_name = "HDMI-1"
+        device_id = get_device_id(target_device_name)
+        if device_id:
+            map_device_to_output(device_id, target_output_name)
+        
         super().__init__()
         self.current_state = Start(self)
         self.main_window = FullScreenWindow(monitor_index=0)
         self.main_window.setWindowTitle("Main")
-        self.sub_window = FullScreenWindow(monitor_index=0)
+        self.sub_window = FullScreenWindow(monitor_index=1)
         self.sub_window.setWindowTitle("Sub")
         self.sub_window.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.update_windows()
@@ -61,10 +68,18 @@ class FullScreenWindow(QMainWindow):
                 font-size: 32px;
             }
         """)
-
+        
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Q:
+            QApplication.quit()
+            exit()
 
 
 if __name__ == "__main__":
     app = QApplication([])
+    app.setStyleSheet("QPushButton {border: 20px solid black; font-size: 128px; background-color: gray; color: black;}")
     state_manager = StateManager()
+    
     app.exec_()
+    
+    sys.exit(app.exec_())
