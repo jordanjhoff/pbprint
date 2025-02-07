@@ -34,6 +34,15 @@ def remove_all_files(directory):
             os.remove(file_path)
             print(f"Cleaned: {file_path}")
 
+def add_padding(image, wpad, hpad, horizontal_shift):
+    w, h = image.size
+    
+    w2 = w + 2*wpad
+    h2 = h + 2*hpad
+    new_image = Image.new("RGBA", (w2,h2), (255,255,255,255))
+    new_image.paste(image, (wpad+horizontal_shift, hpad))
+    return new_image
+    
 
 def image_to_square(image_path):
     '''
@@ -114,7 +123,7 @@ def add_date(final_image, template):
     text_height = bbox[3] - bbox[1]
 
     x = (img_width - text_width) // 2
-    y = img_height - text_height - 35
+    y = img_height - text_height - 45
 
     draw.text((x, y), date_str, fill=template.get("date"), font=font)
     return final_image
@@ -141,6 +150,7 @@ def create_photo(image_paths, template, output_path):
     if template.get("date"):
         final_image = add_date(final_image, template)
     final_image = place_next_duplicate(final_image)
+    final_image = add_padding(final_image, 20, 10, 5)
     final_image.save(output_path)
     print(f"Final image saved at: {output_path}")
 
@@ -175,7 +185,7 @@ class CaptureSequence(State):
     def send_job(self, photo_output_path=None) -> bool:
         images = get_image_paths(captures_dir)
         create_photo(images, self.template, photo_output_path)
-        move_files(captures_dir, archive_dir)
+        #move_files(captures_dir, archive_dir)
         print("Sending job")
         return send_print_job(photo_output_path)
 

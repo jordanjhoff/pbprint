@@ -15,6 +15,13 @@ class Start(State):
 
     def next_state(self, *args) -> 'State':
         #return SelectTemplate(state_manager=self.state_manager)
+       
+        return DisplayTextState(state_manager=self.state_manager,
+                                         display_text="Loading",
+                                         timeout=1,
+                                         next=(lambda: self.determine_state()))
+    
+    def determine_state(self) -> State:
         payment = PaymentManager()
         if payment.checkout_link is None:
             start = lambda: Start(self.state_manager)
@@ -22,8 +29,8 @@ class Start(State):
                                     display_text="Unable to connect to internet",
                                     timeout=10,
                                     next=start)
-        return AwaitPayment(self.state_manager, payment_manager=payment)
-
+        else:
+            return AwaitPayment(self.state_manager, payment)
 
 class SubGUI(QWidget):
     """
@@ -36,8 +43,8 @@ class SubGUI(QWidget):
         super().__init__(parent)
 
         self.begin = QPushButton("Begin", self)
+        self.begin.setStyleSheet("QPushButton {border: 10px solid black; font-size: 64px; background-color: gray; color: black;}")
         self.begin.setFixedSize(500, 300)
-        self.begin.setStyleSheet("font-size: 32px;")
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.begin)
         self.setLayout(button_layout)
@@ -48,9 +55,10 @@ class StartSplash(QWidget):
         super().__init__(parent)
         self.label = QLabel(display_text, self)
         self.label.setAlignment(Qt.AlignCenter)
-        self.label.setStyleSheet("font-size: 64px;")
-        layout = QVBoxLayout()
+        layout = QVBoxLayout()	
         layout.addWidget(self.label)
+        self.setStyleSheet("QPushButton {border: 20px solid black; font-size: 64px; background-color: gray; color: black;}")
+
         self.setLayout(layout)
 
 
