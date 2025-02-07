@@ -52,7 +52,7 @@ pasta = {"num_images": 3,
 vday = {"num_images": 3,
          "image_size": (555, 431),
          "starting_pos": (20, 50),
-         "image_div": 15,
+         "image_div": 8,
          "border": f"{assets_dir}/vday.png",
          "orientation": "vertical",
          "date":"white"}
