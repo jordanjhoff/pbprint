@@ -1,6 +1,7 @@
 import os
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.uic.properties import QtGui
 
 from states.CaptureSequence import CaptureSequence
 from states.DisplayTextState import DisplayTextState
@@ -149,7 +150,7 @@ class MainGUI(QWidget):
 
 
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 
 
 class SubGUI(QWidget):
@@ -159,12 +160,16 @@ class SubGUI(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.left_button = QPushButton("Left", self)
-        self.right_button = QPushButton("Right", self)
+        self.left_button = QPushButton("", self)
+        self.right_button = QPushButton("", self)
         self.select_button = QPushButton("Select", self)
 
         self.left_button.setFixedSize(300, 200)
         self.right_button.setFixedSize(300, 200)
+        self.left_button.setIcon(QIcon(f'{assets_dir}/left.png'))
+        self.right_button.setIcon(QIcon(f'{assets_dir}/right.png'))
+        self.left_button.setIconSize(QSize(300, 200))
+        self.right_button.setIconSize(QSize(300, 200))
         self.select_button.setFixedSize(300, 200)
         self.setStyleSheet("QPushButton {border: 10px solid black; font-size: 64px; background-color: gray; color: black;}")
 
