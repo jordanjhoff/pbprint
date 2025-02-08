@@ -10,4 +10,4 @@ output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outp
 images = get_image_paths(photo_dir)
 print(images)
 create_photo(images, pasta, f"{output_dir}/final_photo.png")
-send_print_job(f"{output_dir}/final_photo.png")
+#send_print_job(f"{output_dir}/final_photo.png")
