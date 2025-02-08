@@ -185,7 +185,10 @@ class CaptureSequence(State):
     def send_job(self, photo_output_path=None) -> bool:
         images = get_image_paths(captures_dir)
         create_photo(images, self.template, photo_output_path)
-        #move_files(captures_dir, archive_dir)
+        try:
+            move_files(captures_dir, archive_dir)
+        except Exception:
+            pass
         print("Sending job")
         return send_print_job(photo_output_path)
 

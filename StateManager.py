@@ -7,7 +7,7 @@ from getdevice import *
 
 class StateManager(QObject):
     def __init__(self):
-        target_device_name = "USB2IIC_CTP_CONTROL"
+        target_device_name = "CTP_CONTROL"
         target_output_name = "HDMI-1"
         device_id = get_device_id(target_device_name)
         if device_id:
