@@ -53,16 +53,14 @@ class PaymentManager:
                                     "name": "Photobooth",
                                     "quantity": "1",
                                     "base_price_money": {
-                                        "amount": 400,
+                                        "amount": 300,
                                         "currency": "USD"
                                     }
                                 }
                             ]
                         },
                         "checkout_options": {
-                            "allow_tipping": True,
-                            "custom_tip_field": True,  # Allows users to enter a custom tip amount
-                            "separate_tip_screen": False,  # Prevents pre-selecting a tip amount
+                            "allow_tipping": False,
                             "merchant_support_email": "forty1bear@gmail.com",
                             "ask_for_shipping_address": False,
                             "accepted_payment_methods": {

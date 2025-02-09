@@ -87,7 +87,7 @@ class AwaitPayment(State):
         if self.retry_limit <= 0:
             print("retry limit reached, defaulting to start page")
             self.retries_reached = True
-            self.notify_state_update()
+            self.notify_state_update("return")
         if status := self.payment_manager.check_payment_status():
             print(f"status: {status}")
             if status == "OPEN":
