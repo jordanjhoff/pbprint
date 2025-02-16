@@ -271,8 +271,8 @@ class CameraCaptureWidget(QWidget):
         remaining_time = max(self.countdown_time - int(elapsed_time - self.preview_time), 0)
 
         if remaining_time == 0:
-            frame = self.capture_photo(frame)
-            self.display_frame(mirrored_frame)
+            saved_photo = self.capture_photo(frame)
+            self.display_frame(saved_photo)
             self.is_freezing = True
             QTimer.singleShot(self.display_time * 1000, self.end_freeze) # Freeze frame for display_time
 
