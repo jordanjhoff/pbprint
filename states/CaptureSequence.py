@@ -251,7 +251,8 @@ class CameraCaptureWidget(QWidget):
             if not ret:
                 return
             frame = self.crop_frame(frame)
-            self.display_frame(frame)
+            mirrored_frame = cv2.flip(frame, 1)
+            self.display_frame(mirrored_frame)
             return
 
         if self.photos_index >= self.num_images:
@@ -265,22 +266,23 @@ class CameraCaptureWidget(QWidget):
             return
 
         frame = self.crop_frame(frame)
+        mirrored_frame = cv2.flip(frame, 1)
 
         remaining_time = max(self.countdown_time - int(elapsed_time - self.preview_time), 0)
 
         if remaining_time == 0:
             frame = self.capture_photo(frame)
-            self.display_frame(frame)
+            self.display_frame(mirrored_frame)
             self.is_freezing = True
             QTimer.singleShot(self.display_time * 1000, self.end_freeze) # Freeze frame for display_time
 
         elif remaining_time == 1:
-            self.overlay_text(frame, "Smile!", position=(100, 100), font_scale=3, color=(0, 255, 0), thickness=8)
+            self.overlay_text(mirrored_frame, "Smile!", position=(100, 100), font_scale=3, color=(0, 255, 0), thickness=8)
         else:
-            self.overlay_text(frame, str(remaining_time - 1), position=(100, 100), font_scale=3, color=(255, 255, 255),
+            self.overlay_text(mirrored_frame, str(remaining_time - 1), position=(100, 100), font_scale=3, color=(255, 255, 255),
                               thickness=8)
 
-        self.display_frame(frame)
+        self.display_frame(mirrored_frame)
 
     def end_freeze(self):
         """
