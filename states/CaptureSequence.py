@@ -1,12 +1,15 @@
 import os
 import shutil
 import time
+from decimal import Context
+
 import numpy as np
 from datetime import datetime
 
 from PIL import Image, ImageDraw, ImageFont
 
 from printer.printer import send_print_job
+from states.Context import ConfigContext
 from states.DisplayTextState import DisplayTextState
 
 from states.State import State
@@ -177,10 +180,11 @@ class CaptureSequence(State):
     """
     Manages the GUI that runs the capture sequence for the photo booth.
     """
-    def __init__(self, state_manager, template: dict, parent=None, ):
+    def __init__(self, state_manager, template: dict, context: ConfigContext = ConfigContext()):
         super().__init__(state_manager, main_widget=CameraCaptureWidget(state=self, save_dir =captures_dir, template=template), sub_widget=None)
         remove_all_files(captures_dir)
         self.template = template
+        self.context = context
 
     def send_job(self, photo_output_path=None) -> bool:
         images = get_image_paths(captures_dir)
@@ -198,16 +202,19 @@ class CaptureSequence(State):
             return DisplayTextState(state_manager=self.state_manager,
                                     display_text="Failed to send job to printer. Please contact for help",
                                     timeout=10,
-                                    next=(lambda: Start(self.state_manager)))
+                                    next=(lambda: Start(self.state_manager)),
+                                    context=self.context)
 
         final = lambda: DisplayTextState(state_manager=self.state_manager,
                                          display_text="Thank you!",
                                          timeout=10,
-                                         next=(lambda: Start(self.state_manager)))
+                                         next=(lambda: Start(self.state_manager)),
+                                         context=self.context)
         return DisplayTextState(state_manager=self.state_manager,
                                 display_text="Printing...",
                                 timeout=30,
-                                next=final)
+                                next=final,
+                                context=self.context)
 
 
 class CameraCaptureWidget(QWidget):

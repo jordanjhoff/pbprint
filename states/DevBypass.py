@@ -3,23 +3,27 @@ import sys
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QGridLayout, QPushButton, QLineEdit
 
+from states import Context
+from states.Context import ConfigContext
+from states.ControlState import DevControl
 from states.SelectTemplate import SelectTemplate
 from states.State import State
 
 password = "2121919"
 
 class DevBypass(State):
-    def __init__(self, state_manager):
+    def __init__(self, state_manager, context: ConfigContext = ConfigContext()):
         super().__init__(state_manager=state_manager, main_widget=None, sub_widget=Keypad())
         self.sub_widget.code_signal.connect(self.submit_code)
+        self.context = context
 
     def next_state(self, *args) -> State:
         if args[0] == password:
-            return SelectTemplate(self.state_manager)
+            return DevControl(self.state_manager, context=self.context)
         else:
             print(f"Invalid code was entered:{args[0]}")
             from states.Start import Start
-            return Start(self.state_manager)
+            return Start(self.state_manager, context=self.context)
 
     def submit_code(self, code):
         self.notify_state_update(code)

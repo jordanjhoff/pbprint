@@ -7,6 +7,8 @@ import os
 from PyQt5.QtGui import QPixmap
 from cv2 import data
 
+from states import Context
+from states.Context import ConfigContext
 from states.DevBypass import DevBypass
 from states.DisplayTextState import DisplayTextState
 from states.PaymentManager import PaymentManager
@@ -24,8 +26,9 @@ output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outp
 
 class AwaitPayment(State):
 
-    def __init__(self, state_manager, payment_manager: PaymentManager):
+    def __init__(self, state_manager, payment_manager: PaymentManager, context: ConfigContext = ConfigContext()):
         super().__init__(state_manager=state_manager, main_widget=MainGUI(), sub_widget=SubGUI())
+        self.context = context
         self.press_history = []
         self.sub_widget.top_left_signal.connect(lambda: self.record_press("top-left"))
         self.sub_widget.top_right_signal.connect(lambda: self.record_press("top-right"))
@@ -55,12 +58,13 @@ class AwaitPayment(State):
             return DisplayTextState(state_manager=self.state_manager,
                                     display_text="Unable to connect to internet",
                                     timeout=10,
-                                    next=start)
+                                    next=start,
+                                    context=self.context)
         if args and args[0] == "dev_bypass":
-            return DevBypass(self.state_manager)
+            return DevBypass(self.state_manager, context=self.context)
         else:
             self.payment_manager.clean_payment_manager()
-            return SelectTemplate(self.state_manager)
+            return SelectTemplate(self.state_manager, context=self.context)
 
     def record_press(self, text: str):
         self.press_history.append(text)

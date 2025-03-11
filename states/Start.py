@@ -2,24 +2,34 @@ from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QLabel, QVBoxLayout
 
 from states.AwaitPayment import AwaitPayment
+from states.Context import ConfigContext
 from states.DisplayTextState import DisplayTextState
 from states.PaymentManager import PaymentManager
 from states.SelectTemplate import SelectTemplate
 from states.State import State
 
 class Start(State):
-    def __init__(self, state_manager):
+    def __init__(self, state_manager, context: ConfigContext = ConfigContext()):
         super().__init__(state_manager=state_manager, main_widget=StartSplash(display_text="WELCOME!"), sub_widget=SubGUI())
-
+        self.context = context
         self.sub_widget.begin.clicked.connect(self.notify_state_update)
 
     def next_state(self, *args) -> 'State':
-        #return SelectTemplate(state_manager=self.state_manager)
+        if self.context.config.get("accept_payment"):
+            return DisplayTextState(
+                state_manager=self.state_manager,
+                display_text="Loading",
+                timeout=1,
+                next=(lambda: self.determine_state()),
+                context=self.context,
+            )
+
+        return SelectTemplate(
+            state_manager=self.state_manager,
+            context=self.context,
+        )
        
-        return DisplayTextState(state_manager=self.state_manager,
-                                         display_text="Loading",
-                                         timeout=1,
-                                         next=(lambda: self.determine_state()))
+
     
     def determine_state(self) -> State:
         payment = PaymentManager()

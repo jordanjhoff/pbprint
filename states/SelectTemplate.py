@@ -3,80 +3,27 @@ from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.uic.properties import QtGui
 
+from states import Context
 from states.CaptureSequence import CaptureSequence
+from states.Context import ConfigContext
 from states.DisplayTextState import DisplayTextState
 from states.State import State
 
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
 
-vinny_template = {"num_images": 3,
-                  "image_size": (482, 435),
-                  "starting_pos": (59, 59),
-                  "image_div": 58,
-                  "border": f"{assets_dir}/vinny2.png",
-                  "orientation": "vertical",
-                  "date":"black"}
 
-template_2 = {"num_images": 4,
-              "image_size": (482, 322),
-              "starting_pos": (59, 59),
-              "image_div": 58,
-              "border": f"{assets_dir}/template_2.png",
-              "orientation": "vertical",
-              "date":"black"}
 
-film_template = {"num_images": 3,
-                 "image_size": (414, 569),
-                 "starting_pos": (91, 23),
-                 "image_div": 10,
-                 "border": f"{assets_dir}/film_strip.png",
-                 "orientation": "horizontal",
-                 "date":False}
-
-film2 = {"num_images": 3,
-                 "image_size": (380, 580),
-                 "starting_pos": (110, 23),
-                 "image_div": 10,
-                 "border": f"{assets_dir}/film2.png",
-                 "orientation": "horizontal",
-                 "date":False}
-
-pasta = {"num_images": 3,
-         "image_size": (555, 431),
-         "starting_pos": (20, 50),
-         "image_div": 15,
-         "border": f"{assets_dir}/pasta.png",
-         "orientation": "vertical",
-         "date":"black"}
-
-vday = {"num_images": 3,
-         "image_size": (555, 431),
-         "starting_pos": (20, 50),
-         "image_div": 8,
-         "border": f"{assets_dir}/vday.png",
-         "orientation": "vertical",
-         "date":"white"}
-
-doodle = {"num_images": 3,
-          "image_size": (550, 429),
-          "starting_pos": (20, 70),
-          "image_div": 72,
-          "border": f"{assets_dir}/doodle.png",
-          "orientation": "vertical",
-          "date":"white"}
-
-templates = [vinny_template, film2, doodle, vday]
 
 class SelectTemplate(State):
 
-    def __init__(self, state_manager):
+    def __init__(self, state_manager, context: ConfigContext = ConfigContext()):
         super().__init__(state_manager, main_widget=MainGUI(), sub_widget=SubGUI())
         """Manages the image selection and interaction between the two GUIs."""
-
-        self.templates = templates
+        self.context = context
+        self.templates = context.config.get("templates")
         self.current_index = 0
-        self.main_widget.set_images([item['border'] for item in templates])
+        self.main_widget.set_images([item['border'] for item in self.templates])
         self.main_widget.highlight_image(self.current_index)
 
         self.sub_widget.left_button.clicked.connect(self.prev_image)
