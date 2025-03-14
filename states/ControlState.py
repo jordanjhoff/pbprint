@@ -5,7 +5,7 @@ from states.State import State
 
 
 class DevControl(State):
-    def __init__(self, state_manager, context: ConfigContext = ConfigContext()):
+    def __init__(self, state_manager, context: ConfigContext):
         super().__init__(state_manager=state_manager, main_widget=None, sub_widget=ControlPad(context=context))
         self.context = context
         self.sub_widget.done.clicked.connect(self.notify_state_update)
@@ -18,7 +18,7 @@ class DevControl(State):
         self.notify_state_update(code)
 
 class ControlPad(QWidget):
-    def __init__(self, context: ConfigContext = ConfigContext()):
+    def __init__(self, context: ConfigContext):
         super().__init__()
         self.context = context
         layout = QVBoxLayout()

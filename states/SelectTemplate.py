@@ -17,7 +17,7 @@ output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outp
 
 class SelectTemplate(State):
 
-    def __init__(self, state_manager, context: ConfigContext = ConfigContext()):
+    def __init__(self, state_manager, context: ConfigContext):
         super().__init__(state_manager, main_widget=MainGUI(), sub_widget=SubGUI())
         """Manages the image selection and interaction between the two GUIs."""
         self.context = context

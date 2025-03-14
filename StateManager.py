@@ -1,5 +1,7 @@
 from PyQt5.QtCore import QObject, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow
+
+from states.Context import ConfigContext
 from states.Start import Start
 from states.State import State
 from getdevice import *
@@ -14,7 +16,7 @@ class StateManager(QObject):
             map_device_to_output(device_id, target_output_name)
         
         super().__init__()
-        self.current_state = Start(self)
+        self.current_state = Start(self, ConfigContext())
         self.main_window = FullScreenWindow(monitor_index=0)
         self.main_window.setWindowTitle("Main")
         self.sub_window = FullScreenWindow(monitor_index=1)

@@ -153,7 +153,7 @@ def create_photo(image_paths, template, output_path):
     if template.get("date"):
         final_image = add_date(final_image, template)
     final_image = place_next_duplicate(final_image)
-    final_image = add_padding(final_image, 20, 10, 5)
+    final_image = add_padding(final_image, 20, 8, 5)
     final_image.save(output_path)
     print(f"Final image saved at: {output_path}")
 

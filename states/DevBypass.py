@@ -12,7 +12,7 @@ from states.State import State
 password = "2121919"
 
 class DevBypass(State):
-    def __init__(self, state_manager, context: ConfigContext = ConfigContext()):
+    def __init__(self, state_manager, context: ConfigContext):
         super().__init__(state_manager=state_manager, main_widget=None, sub_widget=Keypad())
         self.sub_widget.code_signal.connect(self.submit_code)
         self.context = context

@@ -12,7 +12,7 @@ from states.SelectTemplate import SelectTemplate
 from states.State import State
 
 class Start(State):
-    def __init__(self, state_manager, context: ConfigContext = ConfigContext()):
+    def __init__(self, state_manager, context: ConfigContext):
         super().__init__(state_manager=state_manager, main_widget=StartSplash(display_text="WELCOME!"), sub_widget=SubGUI())
         self.context = context
         self.sub_widget.begin.clicked.connect(self.notify_state_update)

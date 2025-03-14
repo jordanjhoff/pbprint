@@ -11,7 +11,7 @@ from states.State import State
 
 class DisplayTextState(State):
 
-    def __init__(self, state_manager, display_text: str, next: Callable[[], State], timeout: int, context: ConfigContext = ConfigContext()):
+    def __init__(self, state_manager, display_text: str, next: Callable[[], State], timeout: int, context: ConfigContext):
         super().__init__(state_manager=state_manager, main_widget=TextGUI(display_text), sub_widget=None)
         self.next = next
         self.timer = QTimer()
