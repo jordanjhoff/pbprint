@@ -82,7 +82,7 @@ paddyrho = {
     "image_div": 58,
     "border": f"{assets_dir}/paddyrho.png",
     "orientation": "vertical",
-    "date":"white"
+    "date":False,
 }
 
 class ConfigContext(object):
