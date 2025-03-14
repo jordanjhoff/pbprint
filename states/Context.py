@@ -72,7 +72,7 @@ paddy = {
     "image_div": 58,
     "border": f"{assets_dir}/paddy.png",
     "orientation": "vertical",
-    "date":"white"
+    "date":False,
 }
 
 paddyrho = {
