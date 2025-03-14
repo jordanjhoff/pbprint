@@ -88,7 +88,7 @@ class SubGUI(QWidget):
         self.bottom_right_button = CornerButton(self)
 
         self.begin = QPushButton("Begin", self)
-        self.begin.setFixedSize(300, 200)
+        self.begin.setFixedSize(400, 300)
         self.begin.setStyleSheet("QPushButton {border: 10px solid black; font-size: 64px; background-color: gray; color: black;}")
 
         self.top_left_button.clicked_signal.connect(self.top_left_signal)
