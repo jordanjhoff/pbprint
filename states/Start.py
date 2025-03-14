@@ -72,7 +72,7 @@ class Start(State):
 
 class SubGUI(QWidget):
     """
-    Widget with four invisible buttons in each corner.
+    Widget with four invisible buttons in each corner and a visible "Begin" button in the center.
     """
     top_left_signal = pyqtSignal()
     top_right_signal = pyqtSignal()
@@ -86,6 +86,8 @@ class SubGUI(QWidget):
         self.top_right_button = CornerButton(self)
         self.bottom_left_button = CornerButton(self)
         self.bottom_right_button = CornerButton(self)
+
+        self.begin = QPushButton("Begin", self)
 
         self.top_left_button.clicked_signal.connect(self.top_left_signal)
         self.top_right_button.clicked_signal.connect(self.top_right_signal)
@@ -107,7 +109,14 @@ class SubGUI(QWidget):
         bottom_layout.addStretch()
         bottom_layout.addWidget(self.bottom_right_button, alignment=Qt.AlignRight | Qt.AlignBottom)
 
+        center_layout = QHBoxLayout()
+        center_layout.addStretch()
+        center_layout.addWidget(self.begin_button)
+        center_layout.addStretch()
+
         self.layout.addLayout(top_layout)
+        self.layout.addStretch()
+        self.layout.addLayout(center_layout)
         self.layout.addStretch()
         self.layout.addLayout(bottom_layout)
 
