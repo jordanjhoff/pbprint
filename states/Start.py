@@ -51,7 +51,7 @@ class Start(State):
                                     timeout=10,
                                     next=start)
         else:
-            return AwaitPayment(self.state_manager, payment)
+            return AwaitPayment(self.state_manager, payment, context=self.context)
 
     def record_press(self, text: str):
         self.press_history.append(text)
