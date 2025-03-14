@@ -111,7 +111,7 @@ class SubGUI(QWidget):
 
         center_layout = QHBoxLayout()
         center_layout.addStretch()
-        center_layout.addWidget(self.begin_button)
+        center_layout.addWidget(self.begin)
         center_layout.addStretch()
 
         self.layout.addLayout(top_layout)
