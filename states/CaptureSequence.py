@@ -37,13 +37,13 @@ def remove_all_files(directory):
             os.remove(file_path)
             print(f"Cleaned: {file_path}")
 
-def add_padding(image, wpad, hpad, horizontal_shift, vertical_shift):
+def add_padding(image, horizontal_pad, vertical_pad, horizontal_shift, vertical_shift):
     w, h = image.size
     
-    w2 = w + 2*wpad
-    h2 = h + 2*hpad
+    w2 = w + 2 * horizontal_pad
+    h2 = h + 2 * vertical_pad
     new_image = Image.new("RGBA", (w2,h2), (255,255,255,255))
-    new_image.paste(image, (wpad+horizontal_shift, hpad+vertical_shift))
+    new_image.paste(image, (horizontal_pad + horizontal_shift, vertical_pad + vertical_shift))
     return new_image
     
 
@@ -132,7 +132,7 @@ def add_date(final_image, template):
     return final_image
 
 
-def create_photo(image_paths, template, output_path, wpad, hpad, horizontal_shift, vertical_shift):
+def create_photo(image_paths, template, output_path, horizontal_pad, vertical_pad, horizontal_shift, vertical_shift):
     '''
     Creates final photobooth png image
     :param image_paths:
@@ -153,7 +153,7 @@ def create_photo(image_paths, template, output_path, wpad, hpad, horizontal_shif
     if template.get("date"):
         final_image = add_date(final_image, template)
     final_image = place_next_duplicate(final_image)
-    final_image = add_padding(final_image, wpad, hpad, horizontal_shift, vertical_shift)
+    final_image = add_padding(final_image, horizontal_pad, vertical_pad, horizontal_shift, vertical_shift)
     final_image.save(output_path)
     print(f"Final image saved at: {output_path}")
 
@@ -192,8 +192,8 @@ class CaptureSequence(State):
             images,
             self.template,
             photo_output_path,
-            hpad= self.context.config.get("hpad"),
-            wpad= self.context.config.get("wpad"),
+            vertical_pad= self.context.config.get("vertical_pad"),
+            horizontal_pad= self.context.config.get("horizontal_pad"),
             horizontal_shift=self.context.config.get("horizontal_shift"),
             vertical_shift=self.context.config.get("vertical_shift"))
         try:

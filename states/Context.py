@@ -94,8 +94,8 @@ class ConfigContext(object):
             "templates": self.template_group_main,
             "template_group_1": self.template_group_main,
             "template_group_2": self.template_group_alt,
-            "hpad":10,
-            "wpad":20,
+            "vertical_pad":10,
+            "horizontal_pad":20,
             "horizontal_shift":5,
-            "vertical_shift":-4
+            "vertical_shift":-6
         }
