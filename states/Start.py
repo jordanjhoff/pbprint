@@ -45,11 +45,12 @@ class Start(State):
     def determine_state(self) -> State:
         payment = PaymentManager()
         if payment.checkout_link is None:
-            start = lambda: Start(self.state_manager)
+            start = lambda: Start(self.state_manager, context=self.context)
             return DisplayTextState(state_manager=self.state_manager,
                                     display_text="Unable to connect to internet",
                                     timeout=10,
-                                    next=start)
+                                    next=start,
+                                    context=self.context,)
         else:
             return AwaitPayment(self.state_manager, payment, context=self.context)
 
