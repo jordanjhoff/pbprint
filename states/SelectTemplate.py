@@ -46,7 +46,8 @@ class SelectTemplate(State):
         return DisplayTextState(state_manager=self.state_manager,
                                 display_text="Ready?",
                                 timeout=7,
-                                next=(lambda: CaptureSequence(state_manager=self.state_manager, template=self.templates[self.current_index])))
+                                next=(lambda: CaptureSequence(state_manager=self.state_manager, template=self.templates[self.current_index], context=self.context)),
+                                context=self.context)
 
 
 

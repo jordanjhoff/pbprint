@@ -202,13 +202,13 @@ class CaptureSequence(State):
             return DisplayTextState(state_manager=self.state_manager,
                                     display_text="Failed to send job to printer. Please contact for help",
                                     timeout=10,
-                                    next=(lambda: Start(self.state_manager)),
+                                    next=(lambda: Start(self.state_manager, context=self.context)),
                                     context=self.context)
 
         final = lambda: DisplayTextState(state_manager=self.state_manager,
                                          display_text="Thank you!",
                                          timeout=10,
-                                         next=(lambda: Start(self.state_manager)),
+                                         next=(lambda: Start(self.state_manager, context=self.context)),
                                          context=self.context)
         return DisplayTextState(state_manager=self.state_manager,
                                 display_text="Printing...",

@@ -50,9 +50,9 @@ class AwaitPayment(State):
         if args and args[0] == "return":
             from states.Start import Start
             self.payment_manager.clean_payment_manager()
-            return Start(self.state_manager)
+            return Start(self.state_manager, context=self.context)
         if args and args[0] == "failed_payment":
-            start = lambda: Start(self.state_manager)
+            start = lambda: Start(self.state_manager, context=self.context)
             return DisplayTextState(state_manager=self.state_manager,
                                     display_text="Unable to connect to internet",
                                     timeout=10,
