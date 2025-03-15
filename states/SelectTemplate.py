@@ -26,12 +26,12 @@ class SelectTemplate(State):
         )
         self.templates = self.config.CURRENT_TEMPLATES
         self.current_index = 0
-        self.main_widget.set_images([item['border'] for item in self.templates])
-        self.main_widget.highlight_image(self.current_index)
+        self.display_GUI.set_images([item['border'] for item in self.templates])
+        self.display_GUI.highlight_image(self.current_index)
 
-        self.sub_widget.left_button.clicked.connect(self.prev_image)
-        self.sub_widget.right_button.clicked.connect(self.next_image)
-        self.sub_widget.select_button.clicked.connect(self.notify_transition_state)
+        self.control_GUI.left_button.clicked.connect(self.prev_image)
+        self.control_GUI.right_button.clicked.connect(self.next_image)
+        self.control_GUI.select_button.clicked.connect(self.notify_transition_state)
 
     def next_image(self):
         self.current_index = (self.current_index + 1) % len(self.templates)
@@ -42,7 +42,7 @@ class SelectTemplate(State):
         self.update_image()
 
     def update_image(self):
-        self.main_widget.highlight_image(self.current_index)
+        self.display_GUI.highlight_image(self.current_index)
         print(f"Template {self.current_index} selected.")
 
     def next_state(self, *args) -> 'State':

@@ -31,8 +31,8 @@ class State(QObject):
         :param control_GUI: The sub widget of the application.
         """
         super().__init__()
-        self.main_widget = display_GUI
-        self.sub_widget = control_GUI
+        self.display_GUI = display_GUI
+        self.control_GUI = control_GUI
         self.config = config
         self.state_changed_signal = pyqtSignal()
         self.state_manager = state_manager

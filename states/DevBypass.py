@@ -22,7 +22,7 @@ class DevBypass(State):
             control_GUI=ControlGUI()
         )
 
-        self.sub_widget.code_signal.connect(self.submit_code)
+        self.control_GUI.code_signal.connect(self.submit_code)
 
     def next_state(self, *args) -> State:
         if args[0] == self.config.DEV_CODE:

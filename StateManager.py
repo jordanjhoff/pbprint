@@ -19,29 +19,29 @@ class StateManager(QObject):
         super().__init__()
         from states.Start import Start
         self.current_state = Start(state_manager=self, config=Config())
-        self.main_window = FullScreenWindow(monitor_index=0)
-        self.main_window.setWindowTitle("Main")
-        self.sub_window = FullScreenWindow(monitor_index=0)
-        self.sub_window.setWindowTitle("Sub")
-        self.sub_window.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        self.display_GUI = FullScreenWindow(monitor_index=0)
+        self.display_GUI.setWindowTitle("Main")
+        self.control_GUI = FullScreenWindow(monitor_index=0)
+        self.control_GUI.setWindowTitle("Sub")
+        self.control_GUI.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.update_windows()
 
     def update_windows(self) -> None:
         """
         Update the main and sub windows to reflect the current state's widgets.
         """
-        self.main_window.setCentralWidget(self.current_state.main_widget)
-        self.sub_window.setCentralWidget(self.current_state.sub_widget)
-        self.main_window.show()
-        self.sub_window.show()
+        self.display_GUI.setCentralWidget(self.current_state.display_GUI)
+        self.control_GUI.setCentralWidget(self.current_state.control_GUI)
+        self.display_GUI.show()
+        self.control_GUI.show()
 
     def advance_state(self, next_state: State) -> None:
         """Transition to the next state."""
         if next_state:
             self.current_state = next_state
-            self.main_window.activateWindow()
+            self.display_GUI.activateWindow()
             self.update_windows()
-            self.main_window.activateWindow()
+            self.display_GUI.activateWindow()
             
 
 class FullScreenWindow(QMainWindow):
@@ -54,7 +54,7 @@ class FullScreenWindow(QMainWindow):
         screen = screens[monitor_index]
         self.setGeometry(screen.geometry())
         self.showFullScreen()
-        #self.setCursor(Qt.BlankCursor)
+        self.setCursor(Qt.BlankCursor)
         self.setStyleSheet("background-color: beige;")
         app.setStyleSheet("""
             QPushButton {

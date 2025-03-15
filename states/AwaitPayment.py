@@ -32,10 +32,10 @@ class AwaitPayment(State):
             control_GUI=ControlGUI()
         )
         self.press_history = []
-        self.sub_widget.top_left_signal.connect(lambda: self.record_press("top-left"))
-        self.sub_widget.top_right_signal.connect(lambda: self.record_press("top-right"))
-        self.sub_widget.bottom_left_signal.connect(lambda: self.record_press("bottom-left"))
-        self.sub_widget.bottom_right_signal.connect(lambda: self.record_press("bottom-right"))
+        self.control_GUI.top_left_signal.connect(lambda: self.record_press("top-left"))
+        self.control_GUI.top_right_signal.connect(lambda: self.record_press("top-right"))
+        self.control_GUI.bottom_left_signal.connect(lambda: self.record_press("bottom-left"))
+        self.control_GUI.bottom_right_signal.connect(lambda: self.record_press("bottom-right"))
 
         self.payment_manager = payment_manager
         if payment_manager.checkout_link is None:

@@ -18,12 +18,12 @@ class Start(State):
             control_GUI=ControlGUI()
         )
 
-        self.sub_widget.begin.clicked.connect(self.notify_transition_state)
+        self.control_GUI.begin.clicked.connect(self.notify_transition_state)
         self.press_history = []
-        self.sub_widget.top_left_signal.connect(lambda: self.record_press("top-left"))
-        self.sub_widget.top_right_signal.connect(lambda: self.record_press("top-right"))
-        self.sub_widget.bottom_left_signal.connect(lambda: self.record_press("bottom-left"))
-        self.sub_widget.bottom_right_signal.connect(lambda: self.record_press("bottom-right"))
+        self.control_GUI.top_left_signal.connect(lambda: self.record_press("top-left"))
+        self.control_GUI.top_right_signal.connect(lambda: self.record_press("top-right"))
+        self.control_GUI.bottom_left_signal.connect(lambda: self.record_press("bottom-left"))
+        self.control_GUI.bottom_right_signal.connect(lambda: self.record_press("bottom-right"))
 
     def next_state(self, *args) -> 'State':
         from states.DevBypass import DevBypass

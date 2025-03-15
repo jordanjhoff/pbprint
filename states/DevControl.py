@@ -20,7 +20,7 @@ class DevControl(State):
             display_GUI=None,
             control_GUI=ControlGUI(config=config))
 
-        self.sub_widget.done.clicked.connect(self.notify_transition_state)
+        self.control_GUI.done.clicked.connect(self.notify_transition_state)
 
     def next_state(self, *args) -> State:
         from states.Start import Start
