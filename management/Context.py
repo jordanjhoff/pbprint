@@ -4,37 +4,41 @@ assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "asse
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
 
 
-vinny_template = {"num_images": 3,
-                  "image_size": (482, 435),
-                  "starting_pos": (59, 59),
-                  "image_div": 58,
-                  "border": f"{assets_dir}/vinny2.png",
-                  "orientation": "vertical",
-                  "date":"black"}
+vinny_template = {
+    "num_images": 3,
+    "image_size": (482, 435),
+    "starting_pos": (59, 59),
+     "image_div": 58,
+     "border": f"{assets_dir}/vinny2.png",
+    "orientation": "vertical",
+    "date":"black"}
 
-template_2 = {"num_images": 4,
-              "image_size": (482, 322),
-              "starting_pos": (59, 59),
-              "image_div": 58,
-              "border": f"{assets_dir}/template_2.png",
-              "orientation": "vertical",
-              "date":"black"}
+template_2 = {
+    "num_images": 4,
+    "image_size": (482, 322),
+    "starting_pos": (59, 59),
+    "image_div": 58,
+    "border": f"{assets_dir}/template_2.png",
+    "orientation": "vertical",
+    "date":"black"}
 
-film_template = {"num_images": 3,
-                 "image_size": (414, 569),
-                 "starting_pos": (91, 23),
-                 "image_div": 10,
-                 "border": f"{assets_dir}/film_strip.png",
-                 "orientation": "horizontal",
-                 "date":False}
+film_template = {
+    "num_images": 3,
+    "image_size": (414, 569),
+    "starting_pos": (91, 23),
+    "image_div": 10,
+    "border": f"{assets_dir}/film_strip.png",
+    "orientation": "horizontal",
+    "date":False}
 
-film2 = {"num_images": 3,
-                 "image_size": (380, 580),
-                 "starting_pos": (110, 23),
-                 "image_div": 10,
-                 "border": f"{assets_dir}/film2.png",
-                 "orientation": "horizontal",
-                 "date":False}
+film2 = {
+    "num_images": 3,
+    "image_size": (380, 580),
+    "starting_pos": (110, 23),
+    "image_div": 10,
+    "border": f"{assets_dir}/film2.png",
+    "orientation": "horizontal",
+    "date":False}
 
 pasta = {
     "num_images": 3,
