@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import QWidget, QLabel
 
 from StateManager import StateManager
 from management.Context import Config
-from states.CaptureSequence import CaptureSequence
-from states.DisplayText import DisplayText
 from states.State import State
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout
 from PyQt5.QtCore import Qt, QSize
@@ -13,8 +11,6 @@ from PyQt5.QtCore import Qt, QSize
 
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
-
-
 
 
 class SelectTemplate(State):
@@ -50,11 +46,19 @@ class SelectTemplate(State):
         print(f"Template {self.current_index} selected.")
 
     def next_state(self, *args) -> 'State':
-        return DisplayText(state_manager=self.state_manager,
-                           display_text="Ready?",
-                           timeout=7,
-                           next_state_lambda=(lambda: CaptureSequence(state_manager=self.state_manager, template=self.templates[self.current_index], context=self.context)),
-                           context=self.context)
+        from states.CaptureSequence import CaptureSequence
+        from states.DisplayText import DisplayText
+        return DisplayText(
+            state_manager=self.state_manager,
+            config=self.config,
+            display_text="Ready?",
+            timeout=7,
+            next_state_lambda=(lambda: CaptureSequence(
+                state_manager=self.state_manager,
+                config=self.config,
+                selected_template=self.templates[self.current_index])),
+        )
+
 
 
 
