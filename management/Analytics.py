@@ -2,7 +2,6 @@ import functools
 import json
 import os
 import threading
-from datetime import datetime
 
 analytics_file = "analytics.json"
 analytics_lock = threading.Lock()

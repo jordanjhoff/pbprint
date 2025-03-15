@@ -172,7 +172,7 @@ class DisplayGUI(QWidget):
 
     def capture_photo(self, frame):
         timestamp = datetime.now().strftime("%m-%d-%H%M%S")
-        photo_path = os.path.join(self.save_dir, f"photo{self.photos_index}-{timestamp}.jpg")
+        photo_path = os.path.join(self.save_dir, f"{timestamp}-photo{self.photos_index}.jpg")
         cv2.imwrite(photo_path, frame)
         return frame
 
