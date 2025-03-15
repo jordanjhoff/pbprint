@@ -37,8 +37,6 @@ class CaptureSequence(State):
             config=config,
             display_GUI=DisplayGUI(state=self, save_dir =captures_dir, template=selected_template),
             control_GUI=None)
-
-        move_files(captures_dir, archive_dir)
         remove_all_files(captures_dir)
         self.template = selected_template
 
@@ -54,10 +52,11 @@ class CaptureSequence(State):
             horizontal_shift=self.config.HORIZONTAL_SHIFT,
             vertical_shift=self.config.VERTICAL_SHIFT,
         )
-        try:
-            move_files(captures_dir, archive_dir)
-        except Exception:
-            pass
+        if not self.config.DELETE_IMAGES:
+            try:
+                move_files(captures_dir, archive_dir)
+            except Exception:
+                pass
         print("Sending job")
         return send_print_job(photo_output_path)
 
