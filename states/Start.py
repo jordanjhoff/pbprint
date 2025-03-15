@@ -18,7 +18,7 @@ class Start(State):
             control_GUI=ControlGUI()
         )
 
-        self.sub_widget.begin.clicked.connect(self.notify_state_update)
+        self.sub_widget.begin.clicked.connect(self.notify_transition_state)
         self.press_history = []
         self.sub_widget.top_left_signal.connect(lambda: self.record_press("top-left"))
         self.sub_widget.top_right_signal.connect(lambda: self.record_press("top-right"))
@@ -76,7 +76,7 @@ class Start(State):
         self.press_history.append(text)
         print(self.press_history)
         if len(self.press_history) == 4 and self.validate_history(["top-left", "top-right", "bottom-left", "bottom-right"]):
-            self.notify_state_update("dev_bypass")
+            self.notify_transition_state("dev_bypass")
         elif len(self.press_history) >= 4:
             self.press_history = self.press_history[1:]
 

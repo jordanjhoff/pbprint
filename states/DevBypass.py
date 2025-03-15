@@ -35,7 +35,7 @@ class DevBypass(State):
             return Start(state_manager=self.state_manager, config=self.config)
 
     def submit_code(self, code):
-        self.notify_state_update(code)
+        self.notify_transition_state(code)
 
 
 class ControlGUI(QWidget):

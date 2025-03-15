@@ -40,13 +40,13 @@ class State(QObject):
     @abstractmethod
     def next_state(self, *args) -> 'State':
         """
-        Abstract method for transitioning to the next state.
+        Abstract method for determining the next state of the application.
         :param *args: Arguments received for more precise state control.
         :return: The next state.
         """
         pass
 
-    def notify_state_update(self, *args) -> None:
+    def notify_transition_state(self, *args) -> None:
         """
         Method to trigger when the state is updated.
         :param *args: Arguments passed to the next state method.

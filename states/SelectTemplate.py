@@ -31,7 +31,7 @@ class SelectTemplate(State):
 
         self.sub_widget.left_button.clicked.connect(self.prev_image)
         self.sub_widget.right_button.clicked.connect(self.next_image)
-        self.sub_widget.select_button.clicked.connect(self.notify_state_update)
+        self.sub_widget.select_button.clicked.connect(self.notify_transition_state)
 
     def next_image(self):
         self.current_index = (self.current_index + 1) % len(self.templates)

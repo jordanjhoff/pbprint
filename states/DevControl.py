@@ -20,14 +20,14 @@ class DevControl(State):
             display_GUI=None,
             control_GUI=ControlGUI(config=config))
 
-        self.sub_widget.done.clicked.connect(self.notify_state_update)
+        self.sub_widget.done.clicked.connect(self.notify_transition_state)
 
     def next_state(self, *args) -> State:
         from states.Start import Start
         return Start(state_manager=self.state_manager, config=self.config)
 
     def submit_code(self, code):
-        self.notify_state_update(code)
+        self.notify_transition_state(code)
 
 class ControlGUI(QWidget):
     def __init__(self, config: Config):

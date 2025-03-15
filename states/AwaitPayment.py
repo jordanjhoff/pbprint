@@ -39,7 +39,7 @@ class AwaitPayment(State):
 
         self.payment_manager = payment_manager
         if payment_manager.checkout_link is None:
-            self.notify_state_update("failed_payment")
+            self.notify_transition_state("failed_payment")
             return
 
         self.timer = QTimer()
@@ -78,7 +78,7 @@ class AwaitPayment(State):
         self.press_history.append(text)
         print(self.press_history)
         if len(self.press_history) == 4 and self.validate_history(["top-left", "top-right", "bottom-left", "bottom-right"]):
-            self.notify_state_update("dev_bypass")
+            self.notify_transition_state("dev_bypass")
         elif len(self.press_history) >= 4:
             self.press_history = self.press_history[1:]
 
@@ -98,12 +98,12 @@ class AwaitPayment(State):
         if self.retry_limit <= 0:
             print("retry limit reached, defaulting to start page")
             self.retries_reached = True
-            self.notify_state_update("start")
+            self.notify_transition_state("start")
         if status := self.payment_manager.check_payment_status():
             print(f"status: {status}")
             if status == "OPEN":
                 print("PAYMENT RECEIVED")
-                self.notify_state_update("continue")
+                self.notify_transition_state("continue")
         self.retry_limit -= 1
 
 

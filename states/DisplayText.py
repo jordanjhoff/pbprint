@@ -31,7 +31,7 @@ class DisplayText(State):
         self.next = next_state_lambda
         self.timer = QTimer()
         self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.notify_state_update)
+        self.timer.timeout.connect(self.notify_transition_state)
         self.timer.start(timeout*1000)
 
     def next_state(self, *args) -> 'State':

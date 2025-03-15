@@ -135,7 +135,7 @@ class DisplayGUI(QWidget):
         if self.photos_index >= self.num_images:
             self.timer.stop()
             self.cap.release()
-            self.state.notify_state_update()
+            self.state.notify_transition_state()
             return
 
         ret, frame = self.cap.read()
