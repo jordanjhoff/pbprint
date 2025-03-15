@@ -1,32 +1,36 @@
 
 from typing import List
 
-import PIL
-import qrcode
 import os
 from PyQt5.QtGui import QPixmap
 
-from states.Context import ConfigContext
-from states.DevBypass import DevBypass
-from states.DisplayTextState import DisplayTextState
-from states.PaymentManager import PaymentManager
-from states.SelectTemplate import SelectTemplate
+from StateManager import StateManager
+from management.Context import Config
+from management.PaymentManager import PaymentManager
 from states.State import State
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel
+    QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel
 )
 from PyQt5.QtCore import pyqtSignal, Qt, QTimer, QThread
 
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
 
-
-
 class AwaitPayment(State):
+    """State to await user payments. If certain poll attempts reached, return to start."""
+    def __init__(
+        self,
+        state_manager: StateManager,
+        config: Config,
+        payment_manager: PaymentManager,
+    ) -> None:
 
-    def __init__(self, state_manager, payment_manager: PaymentManager, context: ConfigContext):
-        super().__init__(state_manager=state_manager, main_widget=MainGUI(), sub_widget=SubGUI())
-        self.context = context
+        super().__init__(
+            state_manager=state_manager,
+            config=config,
+            display_GUI=DisplayGUI(),
+            control_GUI=ControlGUI()
+        )
         self.press_history = []
         self.sub_widget.top_left_signal.connect(lambda: self.record_press("top-left"))
         self.sub_widget.top_right_signal.connect(lambda: self.record_press("top-right"))
@@ -47,22 +51,28 @@ class AwaitPayment(State):
 
 
     def next_state(self, *args) -> 'State':
-        if args and args[0] == "return":
-            from states.Start import Start
+        from states.Start import Start
+        from states.DisplayText import DisplayText
+        from states.SelectTemplate import SelectTemplate
+        from states.DevBypass import DevBypass
+
+        if args and args[0] == "start":
             self.payment_manager.clean_payment_manager()
-            return Start(self.state_manager, context=self.context)
+            return Start(state_manager=self.state_manager, config=self.config)
         if args and args[0] == "failed_payment":
-            start = lambda: Start(self.state_manager, context=self.context)
-            return DisplayTextState(state_manager=self.state_manager,
-                                    display_text="Unable to connect to internet",
-                                    timeout=10,
-                                    next=start,
-                                    context=self.context)
+            start = lambda: Start(state_manager=self.state_manager, config=self.config)
+            return DisplayText(
+                state_manager=self.state_manager,
+                config=self.config,
+                display_text="Unable to connect to internet",
+                timeout=10,
+                next_state_lambda=start,
+            )
         if args and args[0] == "dev_bypass":
-            return DevBypass(self.state_manager, context=self.context)
+            return DevBypass(state_manager=self.state_manager, config=self.config)
         else:
             self.payment_manager.clean_payment_manager()
-            return SelectTemplate(self.state_manager, context=self.context)
+            return SelectTemplate(state_manager=self.state_manager, config=self.config)
 
     def record_press(self, text: str):
         self.press_history.append(text)
@@ -78,18 +88,17 @@ class AwaitPayment(State):
         for i, j in zip(passcode, self.press_history[-len(passcode):]):
             if i != j:
                 return False
-
         return True
 
     def check_payment_status(self) -> None:
         """
-        Check for successful payment at regular intervals.
+        Poll square API for successful payment at regular intervals.
         """
         print(f"checking payment status {self.retry_limit}")
         if self.retry_limit <= 0:
             print("retry limit reached, defaulting to start page")
             self.retries_reached = True
-            self.notify_state_update("return")
+            self.notify_state_update("start")
         if status := self.payment_manager.check_payment_status():
             print(f"status: {status}")
             if status == "OPEN":
@@ -98,27 +107,12 @@ class AwaitPayment(State):
         self.retry_limit -= 1
 
 
-class CornerButton(QPushButton):
-    """
-    A custom button that is invisible but emits a signal when clicked.
-    """
-    clicked_signal = pyqtSignal()
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setFixedSize(400, 200)
-        self.setStyleSheet("background: transparent; border: none;")
-        self.clicked.connect(self.emit_signal)
-        self.setFocusPolicy(Qt.NoFocus)
-        self.setCursor(Qt.BlankCursor) 
-
-    def emit_signal(self):
-        self.clicked_signal.emit()
     
         
 
 
-class SubGUI(QWidget):
+class ControlGUI(QWidget):
     """
     Widget with four invisible buttons in each corner.
     """
@@ -159,7 +153,9 @@ class SubGUI(QWidget):
         self.layout.addStretch()
         self.layout.addLayout(bottom_layout)
 
-class MainGUI(QWidget):
+
+
+class DisplayGUI(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -190,3 +186,17 @@ class MainGUI(QWidget):
         self.resize(1200, 600)
         self.show()
 
+class CornerButton(QPushButton):
+    """Invisible button."""
+    clicked_signal = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(400, 200)
+        self.setStyleSheet("background: transparent; border: none;")
+        self.clicked.connect(self.emit_signal)
+        self.setFocusPolicy(Qt.NoFocus)
+        self.setCursor(Qt.BlankCursor)
+
+    def emit_signal(self):
+        self.clicked_signal.emit()

@@ -1,8 +1,9 @@
+import sys
+
 from PyQt5.QtCore import QObject, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
-from states.Context import ConfigContext
-from states.Start import Start
+from management.Context import Config
 from states.State import State
 from getdevice import *
 
@@ -16,10 +17,11 @@ class StateManager(QObject):
             map_device_to_output(device_id, target_output_name)
         
         super().__init__()
-        self.current_state = Start(self, ConfigContext())
+        from states.Start import Start
+        self.current_state = Start(state_manager=self, config=Config())
         self.main_window = FullScreenWindow(monitor_index=0)
         self.main_window.setWindowTitle("Main")
-        self.sub_window = FullScreenWindow(monitor_index=1)
+        self.sub_window = FullScreenWindow(monitor_index=0)
         self.sub_window.setWindowTitle("Sub")
         self.sub_window.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.update_windows()
@@ -52,7 +54,7 @@ class FullScreenWindow(QMainWindow):
         screen = screens[monitor_index]
         self.setGeometry(screen.geometry())
         self.showFullScreen()
-        self.setCursor(Qt.BlankCursor)
+        #self.setCursor(Qt.BlankCursor)
         self.setStyleSheet("background-color: beige;")
         app.setStyleSheet("""
             QPushButton {

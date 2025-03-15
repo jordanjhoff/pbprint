@@ -1,45 +1,57 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QCheckBox, QPushButton
 
-from states.Context import ConfigContext
+from StateManager import StateManager
+from management.Context import Config
 from states.State import State
 
 
 class DevControl(State):
-    def __init__(self, state_manager, context: ConfigContext):
-        super().__init__(state_manager=state_manager, main_widget=None, sub_widget=ControlPad(context=context))
-        self.context = context
+    """
+    A state to allow developer controls during runtime.
+    """
+    def __init__(
+        self,
+        state_manager: StateManager,
+        config: Config
+    ):
+        super().__init__(
+            state_manager=state_manager,
+            config=config,
+            display_GUI=None,
+            control_GUI=ControlGUI(config=config))
+
         self.sub_widget.done.clicked.connect(self.notify_state_update)
 
     def next_state(self, *args) -> State:
         from states.Start import Start
-        return Start(self.state_manager, context=self.context)
+        return Start(state_manager=self.state_manager, config=self.config)
 
     def submit_code(self, code):
         self.notify_state_update(code)
 
-class ControlPad(QWidget):
-    def __init__(self, context: ConfigContext):
+class ControlGUI(QWidget):
+    def __init__(self, config: Config):
         super().__init__()
-        self.context = context
+        self.config = config
         layout = QVBoxLayout()
         self.done = QPushButton("Done", self)
 
-        #Switch 1
-        init_1_state = context.config.get("accept_payment")
+        # Accept payment toggle
+        init_1_state = self.config.ACCEPT_PAYMENT
         self.label1 = QLabel()
         self.switch1 = QCheckBox("Enable Payment")
         self.switch1.setChecked(init_1_state)
-        self.switch1.stateChanged.connect(self.update_label1)
+        self.switch1.stateChanged.connect(self.update_accept_payment)
 
-        #Switch 2
-        init_2_state = context.config.get("templates") == context.config.get("template_group_2")
+        # Template toggle
+        init_2_state = self.config.CURRENT_TEMPLATES == self.config.template_group_alt
         self.label2 = QLabel()
         self.switch2 = QCheckBox("Alternate Templates")
         self.switch2.setChecked(init_2_state)
-        self.switch2.stateChanged.connect(self.update_label2)
+        self.switch2.stateChanged.connect(self.update_alt_templates)
 
-        self.update_label1(self.switch1.isChecked())
-        self.update_label2(self.switch2.isChecked())
+        self.update_accept_payment(self.switch1.isChecked())
+        self.update_alt_templates(self.switch2.isChecked())
 
         layout.addWidget(self.switch1)
         layout.addWidget(self.switch2)
@@ -58,9 +70,9 @@ class ControlPad(QWidget):
                     }
                 """)
 
-    def update_label1(self, state: bool):
-        self.context.config["accept_payment"] = state
+    def update_accept_payment(self, state: bool):
+        self.config.ACCEPT_PAYMENT = state
 
-    def update_label2(self, state: bool):
-        self.context.config["templates"] = self.context.config["template_group_2"] if state else self.context.config["template_group_1"]
+    def update_alt_templates(self, state: bool):
+        self.config.CURRENT_TEMPLATES = self.config.template_group_alt if state else self.config.template_group_main
 

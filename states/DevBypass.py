@@ -1,35 +1,44 @@
-import sys
-
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QGridLayout, QPushButton, QLineEdit
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QPushButton, QLineEdit
 
-from states import Context
-from states.Context import ConfigContext
-from states.ControlState import DevControl
-from states.SelectTemplate import SelectTemplate
+from StateManager import StateManager
+from management.Context import Config
 from states.State import State
 
 password = "2121919"
 
 class DevBypass(State):
-    def __init__(self, state_manager, context: ConfigContext):
-        super().__init__(state_manager=state_manager, main_widget=None, sub_widget=Keypad())
+    """
+    State that allows developers to access dev control panel.
+    """
+    def __init__(
+        self,
+        state_manager: StateManager,
+        config: Config
+    ):
+        super().__init__(
+            state_manager=state_manager,
+            config=config,
+            display_GUI=None,
+            control_GUI=ControlGUI()
+        )
+
         self.sub_widget.code_signal.connect(self.submit_code)
-        self.context = context
 
     def next_state(self, *args) -> State:
         if args[0] == password:
-            return DevControl(self.state_manager, context=self.context)
+            from states.DevControl import DevControl
+            return DevControl(state_manager=self.state_manager, config=self.config)
         else:
             print(f"Invalid code was entered:{args[0]}")
             from states.Start import Start
-            return Start(self.state_manager, context=self.context)
+            return Start(state_manager=self.state_manager, config=self.config)
 
     def submit_code(self, code):
         self.notify_state_update(code)
 
 
-class Keypad(QWidget):
+class ControlGUI(QWidget):
 
     code_signal = pyqtSignal(str)
 
@@ -82,11 +91,3 @@ class Keypad(QWidget):
     def send_code(self):
         code = self.textbox.text()
         self.code_signal.emit(code)
-
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = Keypad()
-    window.show()
-    sys.exit(app.exec_())

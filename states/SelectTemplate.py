@@ -1,13 +1,15 @@
 import os
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QWidget, QLabel
-from PyQt5.uic.properties import QtGui
 
-from states import Context
+from StateManager import StateManager
+from management.Context import Config
 from states.CaptureSequence import CaptureSequence
-from states.Context import ConfigContext
-from states.DisplayTextState import DisplayTextState
+from states.DisplayText import DisplayText
 from states.State import State
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import Qt, QSize
+
 
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
@@ -16,12 +18,17 @@ output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outp
 
 
 class SelectTemplate(State):
-
-    def __init__(self, state_manager, context: ConfigContext):
-        super().__init__(state_manager, main_widget=MainGUI(), sub_widget=SubGUI())
-        """Manages the image selection and interaction between the two GUIs."""
-        self.context = context
-        self.templates = context.config.get("templates")
+    """
+    State to allow users to select a template.
+    """
+    def __init__(self, state_manager: StateManager, config: Config):
+        super().__init__(
+            state_manager=state_manager,
+            config=config,
+            display_GUI=DisplayGUI(),
+            control_GUI=ControlGUI()
+        )
+        self.templates = self.config.CURRENT_TEMPLATES
         self.current_index = 0
         self.main_widget.set_images([item['border'] for item in self.templates])
         self.main_widget.highlight_image(self.current_index)
@@ -43,15 +50,15 @@ class SelectTemplate(State):
         print(f"Template {self.current_index} selected.")
 
     def next_state(self, *args) -> 'State':
-        return DisplayTextState(state_manager=self.state_manager,
-                                display_text="Ready?",
-                                timeout=7,
-                                next=(lambda: CaptureSequence(state_manager=self.state_manager, template=self.templates[self.current_index], context=self.context)),
-                                context=self.context)
+        return DisplayText(state_manager=self.state_manager,
+                           display_text="Ready?",
+                           timeout=7,
+                           next_state_lambda=(lambda: CaptureSequence(state_manager=self.state_manager, template=self.templates[self.current_index], context=self.context)),
+                           context=self.context)
 
 
 
-class MainGUI(QWidget):
+class DisplayGUI(QWidget):
     """
     Displays images horizontally, with one image highlighted at a time and one text box under the images.
     """
@@ -97,11 +104,7 @@ class MainGUI(QWidget):
                 label.setStyleSheet("")
 
 
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout
-from PyQt5.QtCore import Qt, QSize
-
-
-class SubGUI(QWidget):
+class ControlGUI(QWidget):
     """
     Contains left, right, and select buttons to navigate through images.
     """

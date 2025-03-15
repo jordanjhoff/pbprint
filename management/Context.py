@@ -85,17 +85,22 @@ paddyrho = {
     "date":False,
 }
 
-class ConfigContext(object):
+class Config:
+    """
+    The configuration context that gets passed from state to state.
+
+    Represents the initial config upon boot, but can be modified by the developer control state.
+    """
     def __init__(self):
         self.template_group_main = [vinny_template, film2, doodle, vday, paddy]
         self.template_group_alt = [vinny_template, film2, doodle, vday, paddy, paddyrho]
-        self.config = {
-            "accept_payment": True,
-            "templates": self.template_group_main,
-            "template_group_1": self.template_group_main,
-            "template_group_2": self.template_group_alt,
-            "vertical_pad":10,
-            "horizontal_pad":20,
-            "horizontal_shift":5,
-            "vertical_shift":-6
-        }
+
+        self.ACCEPT_PAYMENT = True
+        self.PRICE = 3  # USD
+        self.CURRENT_TEMPLATES = self.template_group_main
+        self.VERTICAL_PADDING = 10 # pixels
+        self.HORIZONTAL_PADDING = 20
+        self.HORIZONTAL_SHIFT = 5
+        self.VERTICAL_SHIFT = -6
+        self.LOG = True
+        self.DELETE_IMAGES = False

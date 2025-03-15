@@ -1,30 +1,47 @@
-from abc import ABC, abstractmethod
-from PyQt5.QtCore import QTimer, pyqtSignal, QObject, QState
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget
+from __future__ import annotations
+
+from abc import abstractmethod
+
+
+from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QWidget
+
+from management.Context import Config
+from typing import Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    import StateManager
+
 
 
 class State(QObject):
     """
     Abstract base class representing a state in the application.
     """
-    def __init__(self, state_manager, main_widget: QWidget, sub_widget: QWidget):
+    def __init__(
+        self,
+        state_manager: StateManager,
+        config: Config,
+        display_GUI: Optional[QWidget] | None,
+        control_GUI: Optional[QWidget] | None
+    ) -> None:
         """
         Initialize the state with references to the main and sub widgets.
 
-        :param main_widget: The main widget of the application.
-        :param sub_widget: The sub widget of the application.
+        :param display_GUI: The main widget of the application.
+        :param control_GUI: The sub widget of the application.
         """
         super().__init__()
-        self.state_manager = state_manager
-        self.main_widget = main_widget
-        self.sub_widget = sub_widget
+        self.main_widget = display_GUI
+        self.sub_widget = control_GUI
+        self.config = config
         self.state_changed_signal = pyqtSignal()
+        self.state_manager = state_manager
 
     @abstractmethod
     def next_state(self, *args) -> 'State':
         """
         Abstract method for transitioning to the next state.
-        :param *args:
+        :param *args: Arguments received for more precise state control.
         :return: The next state.
         """
         pass
@@ -32,6 +49,6 @@ class State(QObject):
     def notify_state_update(self, *args) -> None:
         """
         Method to trigger when the state is updated.
-        :param *args:
+        :param *args: Arguments passed to the next state method.
         """
         self.state_manager.advance_state(self.next_state(*args))

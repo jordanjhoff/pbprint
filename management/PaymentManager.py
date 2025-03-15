@@ -8,9 +8,8 @@ from dotenv import load_dotenv
 from square.client import Client
 from square.http.auth.o_auth_2 import BearerAuthCredentials
 
+from management.Context import Config
 from printer.printer import output_dir
-from states import Context
-from states.Context import ConfigContext
 
 load_dotenv()
 access_token=os.environ.get("PAYMENT_TOKEN")
@@ -23,9 +22,10 @@ client = Client(
     environment='production')
 
 class PaymentManager:
-    def __init__(self, amount: int = 5, currency: str = "USD"):
-        self.amount = amount
-        self.currency = currency
+    """Payment manager that creates checkout link and qr code."""
+
+    def __init__(self, config: Config):
+        self.amount = config.PRICE
         self.uuid = str(uuid.uuid4())
         self.idempotency_key = uuid.uuid4()
         self.checkout_link = None
@@ -55,7 +55,7 @@ class PaymentManager:
                                     "name": "Photobooth",
                                     "quantity": "1",
                                     "base_price_money": {
-                                        "amount": 300,
+                                        "amount": self.amount*100,
                                         "currency": "USD"
                                     }
                                 }
@@ -139,8 +139,3 @@ class PaymentManager:
 
         qr_img.putdata(new_data)
         qr_img.save(f"{output_dir}/qrcode.png", "PNG")
-
-
-if __name__ == '__main__':
-    pm = PaymentManager()
-    pm.clean_payment_manager()

@@ -23,20 +23,15 @@ def clear_cups_queue():
     except subprocess.CalledProcessError as e:
         print(f"Error clearing CUPS queue: {e}")
 
-# Define the output directory
 output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
 
 if __name__ == "__main__":
-    # Construct the output file path
     output = os.path.join(output_dir, "final_photo.png")
 
-    # Debugging: Print paths
     print(f"Output directory: {output_dir}")
     print(f"Output file path: {output}")
 
-    # Check if the file exists
     if not os.path.isfile(output):
         print(f"Error: File not found at path {output}")
     else:
-        # Send the file to the printer
         send_print_job(output)

@@ -3,18 +3,21 @@ from typing import List
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QLabel, QVBoxLayout
 
-from states.AwaitPayment import AwaitPayment, CornerButton
-from states.Context import ConfigContext
-from states.DevBypass import DevBypass
-from states.DisplayTextState import DisplayTextState
-from states.PaymentManager import PaymentManager
-from states.SelectTemplate import SelectTemplate
+from StateManager import StateManager
+from management.Context import Config
+from management.PaymentManager import PaymentManager
 from states.State import State
 
+
 class Start(State):
-    def __init__(self, state_manager, context: ConfigContext):
-        super().__init__(state_manager=state_manager, main_widget=StartSplash(display_text="WELCOME!"), sub_widget=SubGUI())
-        self.context = context
+    def __init__(self, state_manager: StateManager, config: Config):
+        super().__init__(
+            state_manager=state_manager,
+            config = config,
+            display_GUI=DisplayGUI(display_text="WELCOME!"),
+            control_GUI=ControlGUI()
+        )
+
         self.sub_widget.begin.clicked.connect(self.notify_state_update)
         self.press_history = []
         self.sub_widget.top_left_signal.connect(lambda: self.record_press("top-left"))
@@ -23,36 +26,51 @@ class Start(State):
         self.sub_widget.bottom_right_signal.connect(lambda: self.record_press("bottom-right"))
 
     def next_state(self, *args) -> 'State':
-        if args and args[0] == "dev_bypass":
-            return DevBypass(self.state_manager, context=self.context)
+        from states.DevBypass import DevBypass
+        from states.DisplayText import DisplayText
+        from states.SelectTemplate import SelectTemplate
 
-        if self.context.config.get("accept_payment"):
-            return DisplayTextState(
+        if args and args[0] == "dev_bypass":
+            return DevBypass(state_manager=self.state_manager, config=self.config)
+
+        # Loads payment manager and goes into await_payment
+        if self.config.ACCEPT_PAYMENT:
+            return DisplayText(
                 state_manager=self.state_manager,
+                config=self.config,
                 display_text="Loading",
                 timeout=1,
-                next=(lambda: self.determine_state()),
-                context=self.context,
+                next_state_lambda=(lambda: self.determine_state()),
             )
 
+        # Bypasses and goes directly to select template state
         return SelectTemplate(
             state_manager=self.state_manager,
-            context=self.context,
+            config=self.config,
         )
        
 
     
     def determine_state(self) -> State:
-        payment = PaymentManager()
-        if payment.checkout_link is None:
-            start = lambda: Start(self.state_manager, context=self.context)
-            return DisplayTextState(state_manager=self.state_manager,
-                                    display_text="Unable to connect to internet",
-                                    timeout=10,
-                                    next=start,
-                                    context=self.context,)
+        """Initializes payment manager and returns to start if unable to initialize."""
+        from states.DisplayText import DisplayText
+        from states.AwaitPayment import AwaitPayment
+
+        payment_manager = PaymentManager(self.config)
+        if payment_manager.checkout_link is None:
+            start = lambda: Start(state_manager=self.state_manager, config=self.config)
+            return DisplayText(
+                state_manager=self.state_manager,
+                config=self.config,
+                display_text="Unable to connect to internet",
+                timeout=10,
+                next_state_lambda=start,
+            )
         else:
-            return AwaitPayment(self.state_manager, payment, context=self.context)
+            return AwaitPayment(
+                state_manager=self.state_manager,
+                config=self.config,
+                payment_manager=payment_manager)
 
     def record_press(self, text: str):
         self.press_history.append(text)
@@ -71,7 +89,7 @@ class Start(State):
 
         return True
 
-class SubGUI(QWidget):
+class ControlGUI(QWidget):
     """
     Widget with four invisible buttons in each corner and a visible "Begin" button in the center.
     """
@@ -123,8 +141,8 @@ class SubGUI(QWidget):
         self.layout.addStretch()
         self.layout.addLayout(bottom_layout)
 
-class StartSplash(QWidget):
-
+class DisplayGUI(QWidget):
+    """Displays a starting splash screen."""
     def __init__(self, parent=None, display_text=None):
         super().__init__(parent)
         self.label = QLabel(display_text, self)
@@ -135,4 +153,19 @@ class StartSplash(QWidget):
 
         self.setLayout(layout)
 
+
+class CornerButton(QPushButton):
+    """Invisible button."""
+    clicked_signal = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(400, 200)
+        self.setStyleSheet("background: transparent; border: none;")
+        self.clicked.connect(self.emit_signal)
+        self.setFocusPolicy(Qt.NoFocus)
+        self.setCursor(Qt.BlankCursor)
+
+    def emit_signal(self):
+        self.clicked_signal.emit()
 
