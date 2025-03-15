@@ -7,6 +7,7 @@ from datetime import datetime
 
 from PIL import Image, ImageDraw, ImageFont
 
+from management.Analytics import log_function_call
 from management.Context import Config
 from printer.printer import send_print_job
 
@@ -40,7 +41,8 @@ class CaptureSequence(State):
         remove_all_files(captures_dir)
         self.template = selected_template
 
-    def send_job(self, photo_output_path=None) -> bool:
+    @log_function_call("template_name")
+    def send_job(self, photo_output_path=None, template_name="") -> bool:
 
         images = get_image_paths(captures_dir)
         create_photo(
@@ -63,7 +65,7 @@ class CaptureSequence(State):
     def next_state(self, *args) -> State:
         from states.Start import Start
         from states.DisplayText import DisplayText
-        if not self.send_job(f"{output_dir}/final_photo.png"):
+        if not self.send_job(photo_output_path=f"{output_dir}/final_photo.png", template_name=self.template.get("name", "No name found")):
             return DisplayText(
                 state_manager=self.state_manager,
                 config=self.config,

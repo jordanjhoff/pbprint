@@ -5,6 +5,7 @@ output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outp
 
 
 vinny_template = {
+    "name": "vinny",
     "num_images": 3,
     "image_size": (482, 435),
     "starting_pos": (59, 59),
@@ -14,6 +15,7 @@ vinny_template = {
     "date":"black"}
 
 template_2 = {
+    "name": "NA",
     "num_images": 4,
     "image_size": (482, 322),
     "starting_pos": (59, 59),
@@ -23,6 +25,7 @@ template_2 = {
     "date":"black"}
 
 film_template = {
+    "name": "film",
     "num_images": 3,
     "image_size": (414, 569),
     "starting_pos": (91, 23),
@@ -32,6 +35,7 @@ film_template = {
     "date":False}
 
 film2 = {
+    "name": "film2",
     "num_images": 3,
     "image_size": (380, 580),
     "starting_pos": (110, 23),
@@ -41,6 +45,7 @@ film2 = {
     "date":False}
 
 pasta = {
+    "name": "pasta",
     "num_images": 3,
     "image_size": (555, 431),
     "starting_pos": (20, 50),
@@ -50,6 +55,7 @@ pasta = {
     "date":"black"}
 
 vday = {
+    "name": "vday",
     "num_images": 3,
      "image_size": (555, 431),
      "starting_pos": (20, 50),
@@ -60,6 +66,7 @@ vday = {
 }
 
 doodle = {
+    "name": "doodle",
     "num_images": 3,
     "image_size": (550, 429),
     "starting_pos": (20, 70),
@@ -70,6 +77,7 @@ doodle = {
 }
 
 paddy = {
+    "name": "paddy",
     "num_images": 3,
     "image_size": (482, 435),
     "starting_pos": (59, 59),
@@ -80,6 +88,7 @@ paddy = {
 }
 
 paddyrho = {
+    "name": "paddyrho",
     "num_images": 3,
     "image_size": (482, 435),
     "starting_pos": (59, 59),
@@ -99,7 +108,7 @@ class Config:
         self.template_group_main = [vinny_template, film2, doodle, vday, paddy]
         self.template_group_alt = [vinny_template, film2, doodle, vday, paddy, paddyrho]
 
-        self.ACCEPT_PAYMENT = True
+        self.ACCEPT_PAYMENT = False
         self.PRICE = 3  # USD
         self.DEV_CODE = "2121919"
         self.CURRENT_TEMPLATES = self.template_group_main
@@ -110,5 +119,4 @@ class Config:
         self.HORIZONTAL_SHIFT = 5
         self.VERTICAL_SHIFT = -6
 
-        self.LOG = True
         self.DELETE_IMAGES = False
