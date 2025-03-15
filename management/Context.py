@@ -103,9 +103,12 @@ class Config:
         self.PRICE = 3  # USD
         self.DEV_CODE = "2121919"
         self.CURRENT_TEMPLATES = self.template_group_main
+
+        # Fine tune controls for calibrating print image
         self.VERTICAL_PADDING = 10 # pixels
         self.HORIZONTAL_PADDING = 20
         self.HORIZONTAL_SHIFT = 5
         self.VERTICAL_SHIFT = -6
+
         self.LOG = True
         self.DELETE_IMAGES = False
