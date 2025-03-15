@@ -18,19 +18,17 @@ def log_event(func_name, arg_value=None):
     """Logs an event count based on function name and argument value."""
     with analytics_lock:
         if func_name not in analytics:
-            analytics[func_name] = {"count": 0, "timestamps": []}
+            analytics[func_name] = {"count": 0}
 
         analytics[func_name]["count"] += 1
-        analytics[func_name]["timestamps"].append(datetime.now().isoformat())
 
         #This allows simple additional logging of a given argument (THIS IS A BAD WAY TO DO THIS LOLOLOL)
         if arg_value is not None:
             if "args" not in analytics[func_name]:
                 analytics[func_name]["args"] = {}
 
-            analytics[func_name]["args"].setdefault(arg_value, {"count": 0, "timestamps": []})
+            analytics[func_name]["args"].setdefault(arg_value, {"count": 0})
             analytics[func_name]["args"][arg_value]["count"] += 1
-            analytics[func_name]["args"][arg_value]["timestamps"].append(datetime.now().isoformat())
 
         with open(analytics_file, "w") as file:
             json.dump(analytics, file, indent=4)
