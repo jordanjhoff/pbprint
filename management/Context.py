@@ -101,6 +101,7 @@ class Config:
 
         self.ACCEPT_PAYMENT = True
         self.PRICE = 3  # USD
+        self.DEV_CODE = "2121919"
         self.CURRENT_TEMPLATES = self.template_group_main
         self.VERTICAL_PADDING = 10 # pixels
         self.HORIZONTAL_PADDING = 20

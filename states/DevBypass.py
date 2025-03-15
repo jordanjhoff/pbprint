@@ -5,7 +5,6 @@ from StateManager import StateManager
 from management.Context import Config
 from states.State import State
 
-password = "2121919"
 
 class DevBypass(State):
     """
@@ -26,7 +25,7 @@ class DevBypass(State):
         self.sub_widget.code_signal.connect(self.submit_code)
 
     def next_state(self, *args) -> State:
-        if args[0] == password:
+        if args[0] == self.config.DEV_CODE:
             from states.DevControl import DevControl
             return DevControl(state_manager=self.state_manager, config=self.config)
         else:
