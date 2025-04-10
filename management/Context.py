@@ -116,7 +116,7 @@ class Config:
     Represents the initial config upon boot, but can be modified by the developer control state.
     """
     def __init__(self):
-        self.template_group_main = [vinny_template, film2, doodle, vday, paddy, formal]
+        self.template_group_main = [vinny_template, film2, doodle, formal]
         self.template_group_alt = [vinny_template, film2, doodle, vday, paddy, paddyrho]
 
         self.ACCEPT_PAYMENT = False
