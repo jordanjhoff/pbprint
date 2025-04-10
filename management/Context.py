@@ -98,6 +98,17 @@ paddyrho = {
     "date":False,
 }
 
+formal = {
+    "name": "formal",
+    "num_images": 3,
+    "image_size": (482, 435),
+    "starting_pos": (59, 59),
+    "image_div": 58,
+    "border": f"{assets_dir}/formal.png",
+    "orientation": "vertical",
+    "date":False,
+}
+
 class Config:
     """
     The configuration context that gets passed from state to state.
@@ -105,7 +116,7 @@ class Config:
     Represents the initial config upon boot, but can be modified by the developer control state.
     """
     def __init__(self):
-        self.template_group_main = [vinny_template, film2, doodle, vday, paddy]
+        self.template_group_main = [vinny_template, film2, doodle, vday, paddy, formal]
         self.template_group_alt = [vinny_template, film2, doodle, vday, paddy, paddyrho]
 
         self.ACCEPT_PAYMENT = False
