@@ -19,7 +19,7 @@ class StateManager(QObject):
         super().__init__()
         from states.Start import Start
         self.current_state = Start(state_manager=self, config=Config())
-        self.display_GUI = FullScreenWindow(monitor_index=0)
+        self.display_GUI = FullScreenWindow(monitor_index=1)
         self.display_GUI.setWindowTitle("Main")
         self.control_GUI = FullScreenWindow(monitor_index=0)
         self.control_GUI.setWindowTitle("Sub")
