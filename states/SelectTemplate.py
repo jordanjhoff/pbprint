@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QWidget, QLabel
 from StateManager import StateManager
 from management.Context import Config
 from states.State import State
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QApplication
 from PyQt5.QtCore import Qt, QSize
 
 
@@ -84,11 +84,17 @@ class DisplayGUI(QWidget):
         """Set the images to be displayed and highlight the first one."""
         self.labels.clear()
         image_layout = QHBoxLayout()
+        
+        screen = QApplication.primaryScreen().availableGeometry()
+        screen_width = screen.width()
+        num_images = len(images)
+        max_width_per_image = int(screen_width // num_images)
+        max_height = int(screen.height() * 0.5) 
 
         for image_path in images:
             label = QLabel(self)
             pixmap = QPixmap(image_path)
-            label.setPixmap(pixmap.scaled(500, 500, Qt.KeepAspectRatio))
+            label.setPixmap(pixmap.scaled(max_width_per_image, max_height, Qt.KeepAspectRatio))
             label.setAlignment(Qt.AlignCenter)
             self.labels.append(label)
             image_layout.addWidget(label)
