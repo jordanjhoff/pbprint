@@ -109,6 +109,28 @@ formal = {
     "date":False,
 }
 
+bgeween = {
+    "name": "bgeween",
+    "num_images": 3,
+    "image_size": (482, 435),
+    "starting_pos": (59, 59),
+    "image_div": 58,
+    "border": f"{assets_dir}/bgeween.png",
+    "orientation": "vertical",
+    "date":"orange",
+}
+
+vinnyween = {
+    "name": "vinnyween",
+    "num_images": 3,
+    "image_size": (482, 435),
+    "starting_pos": (59, 59),
+     "image_div": 58,
+     "border": f"{assets_dir}/vinnyween.png",
+    "orientation": "vertical",
+    "date":False}
+
+
 class Config:
     """
     The configuration context that gets passed from state to state.
@@ -116,8 +138,8 @@ class Config:
     Represents the initial config upon boot, but can be modified by the developer control state.
     """
     def __init__(self):
-        self.template_group_main = [vinny_template, film2, doodle, formal]
-        self.template_group_alt = [vinny_template, film2, doodle, vday, paddy, paddyrho]
+        self.template_group_main = [bgeween, vinnyween, vinny_template, film2, doodle]
+        self.template_group_alt = [bgeween, vinnyween, vinny_template, film2, doodle]
 
         self.ACCEPT_PAYMENT = False
         self.PRICE = 3  # USD
